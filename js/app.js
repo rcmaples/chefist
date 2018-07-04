@@ -70,7 +70,7 @@
 
 
 
-/*
+/* 
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 
@@ -85,7 +85,6 @@ function onFormSubmit(){
     $('#js-search-form').submit(function(event){
         event.stopPropagation();
         event.preventDefault();
-        //alert("SUBMIT!");
         let jsIngredients = $(this).serializeArray(); // Array of values
         let ingredientString = ""; // empty string
 
