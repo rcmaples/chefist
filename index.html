@@ -43,13 +43,15 @@
                     <p>To get started, enter ingredients you have in your kitchen. One item per line, then submit!</p>
                 </div>
             </div>
-            <form name="searchForm" class="js-search">
-                    <input type="text" placeholder="Chicken Breast" id="ingredient1" name="ingredient1" class="ingredient1" required>
-                    <input type="text" placeholder="Chicken Breast"/>
+            <form id="js-search-form" action="#" method="GET">
+                <fieldset>
+                    <legend class="clip">Enter your ingredients</legend>
+                    <input type="text" placeholder="Chicken Breast" id="ingredient-1" name="ingredient-1" required>
                     <input type="submit"/>
                     <button class="fab fab-action-button">
                         <i class="fab-action-button__add"></i>
                     </button>
+                </fieldset>    
             </form>
         </section>
         </div>

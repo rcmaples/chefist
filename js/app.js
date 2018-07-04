@@ -80,8 +80,24 @@
 
 
 
-/*
+/* Dynamically add form fields as needed max 10.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+function increaseFormFields (i){
+    if (i<=10) { // limit to 10 items or less. i is 1-indexed here.
+        console.log(`Increasing Fields`);
+        let j = i;
+        $('#js-search-form input:text:last').on('change',
+            function(){
+                $(this).after(
+                    `<input type="text" placeholder="Chicken Breast" id="ingredient-${j}" name="ingredient-${j}" >`
+                );
+                j++;
+                increaseFormFields(j);
+            }
+        );
+    }
+}
+
 
 
 
@@ -97,6 +113,7 @@ function getRidOfSimilar (myStr) {
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
+    increaseFormFields(2);
     console.log('Jinkies!');
 };
 $(jinkies);
