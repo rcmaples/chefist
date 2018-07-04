@@ -49,21 +49,24 @@
  * Once we have the summary of each recipe, we need 
  * jQuery to create a summary card item and display 
  * it. We'll be using Desandro's Masonry to display
- * the results. https://masonry.desandro.com/
+ * the results.
+ * https://masonry.desandro.com/ (MIT License)
  * 
  * The results will have infinite scroll load using 
  * Metafizzy's Infinite Scroll 
- * https://infinite-scroll.com/
+ * https://infinite-scroll.com/ (GNU GPL 3)
+ * 
+ * User should be able to return to search form from
+ * search results to start over.
  * 
  * When the user clicks on a summary card, we will 
  * call the information end point with the recipe's
  * ID number from the summary card. This API call 
  * will likely take a bit of time to run.
  * 
- * 
- * 
- * 
- * 
+ * User should be able to return to Search Results
+ * from their selected recipe.
+ –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 
 
