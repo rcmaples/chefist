@@ -85,9 +85,14 @@
 
 
 
-/*
+/* Toss "Similar recipes ..." from the end of summary
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-
+function getRidOfSimilar (myStr) {
+    let myStr = myStr;
+    let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
+    newStr += "</p>";
+    return newStr;
+}
 
 
 
