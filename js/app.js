@@ -75,9 +75,30 @@
 
 
 
-/*
+/* Watch for Form Submit
+ * when the form is submitted, make an array of values
+ * Traverse the Array and fill a string with non-empty values
+ * Pop the comma off the end of the string
+ * return the string for API call.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+function onFormSubmit(){
+    $('#js-search-form').submit(function(event){
+        event.stopPropagation();
+        event.preventDefault();
+        //alert("SUBMIT!");
+        let jsIngredients = $(this).serializeArray(); // Array of values
+        let ingredientString = ""; // empty string
 
+        for (let k = 0; k<jsIngredients.length; k++) {
+            if (jsIngredients[k].value) { // if non-empty
+            ingredientString +=  `${jsIngredients[k].value},`; // concat on to the string
+            }
+        }
+        ingredientString = ingredientString.slice(0,ingredientString.length-1); // remove that comma
+        console.log(ingredientString); // return!
+    })
+
+}
 
 
 
@@ -115,6 +136,7 @@ function getRidOfSimilar (myStr) {
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
     increaseFormFields(3);
+    onFormSubmit();
     console.log('Jinkies!');
 };
 $(jinkies);
