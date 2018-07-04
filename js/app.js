@@ -94,13 +94,6 @@ function getRidOfSimilar (myStr) {
     return newStr;
 }
 
-
-
-
-
-
-
-
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
