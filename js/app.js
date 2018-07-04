@@ -100,11 +100,6 @@ function onFormSubmit(){
 
 }
 
-
-
-
-
-
 /* Dynamically add form fields as needed max 10.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function increaseFormFields (i){
@@ -135,8 +130,8 @@ function getRidOfSimilar (myStr) {
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
-    increaseFormFields(3);
-    onFormSubmit();
+    increaseFormFields(3); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
+    onFormSubmit(); 
     console.log('Jinkies!');
 };
 $(jinkies);
