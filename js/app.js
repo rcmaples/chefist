@@ -72,11 +72,17 @@
 
 /* API Section :)
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green beans,corn on the cob`; // for initial test and QA.
+let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green beans,corn on the cob`; /* for initial test and QA. */
+// let SEARCH_QUERY = ``;
 const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
 const INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${SEARCH_QUERY}&limitLicense=true&number=10&ranking=1`;
 
-
+/* callApi takes a base url, query string, and 
+ * callback upon successful api request, will 
+ * perform callback. upon error, will run apiError
+ * function to log errors to the console. Will call
+ * setHeader before the api request for auth etc
+ –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function. 
     $.ajax({
         url: `${baseUrl}${query}`,
@@ -88,10 +94,12 @@ function callApi(baseUrl, query, callback) { // Generalized for portability. On 
     });
 }
 
+// For sending headers on the API Request
 function setHeader(xhr) {
   xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');
 }
 
+// Basic Error Handlind
 function apiError(jqXHR, textStatus, errorThrown) {
     alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
     console.log(`/--------------------`);
@@ -104,6 +112,7 @@ function apiError(jqXHR, textStatus, errorThrown) {
     console.log(`/--------------------`);
 }
 
+// test function to be passed as callback verify correct response
 function apiTest(data){
     console.log(data);
 }
