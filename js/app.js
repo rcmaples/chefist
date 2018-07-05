@@ -70,10 +70,43 @@
 
 
 
-/* 
+/* API Section :)
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green beans,corn on the cob`; // for initial test and QA.
+const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
+const INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${SEARCH_QUERY}&limitLicense=true&number=10&ranking=1`;
 
 
+function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function. 
+    $.ajax({
+        url: `${baseUrl}${query}`,
+        type: 'GET',
+        dataType: 'json',
+        success: callback,
+        error: apiError,
+        beforeSend: setHeader
+    });
+}
+
+function setHeader(xhr) {
+  xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');
+}
+
+function apiError(jqXHR, textStatus, errorThrown) {
+    alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
+    console.log(`/--------------------`);
+    console.log('jqXHR:');
+    console.log(jqXHR);
+    console.log('textStatus:');
+    console.log(textStatus);
+    console.log('errorThrown:');
+    console.log(errorThrown);
+    console.log(`/--------------------`);
+}
+
+function apiTest(data){
+    console.log(data);
+}
 
 /* Watch for Form Submit
  * when the form is submitted, make an array of values
