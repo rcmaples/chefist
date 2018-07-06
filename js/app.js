@@ -76,6 +76,8 @@ let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green bean
 // let SEARCH_QUERY = ``;
 const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
 const INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${SEARCH_QUERY}&limitLicense=true&number=10&ranking=1`;
+const GET_RECIPE_STRING = `${recipe-id}/information?includeNutrition=true`;
+const GET_SUMMARY_RESULTS = `${recipe-id}/summary`;
 
 /* callApi takes a base url, query string, and 
  * callback upon successful api request, will 
@@ -99,7 +101,7 @@ function setHeader(xhr) {
   xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');
 }
 
-// Basic Error Handlind
+// Basic Error Handling
 function apiError(jqXHR, textStatus, errorThrown) {
     alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
     console.log(`/--------------------`);
