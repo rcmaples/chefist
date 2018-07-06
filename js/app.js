@@ -70,35 +70,111 @@
 
 
 
-/*
+/* API Section :)
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green beans,corn on the cob`; /* for initial test and QA. */
+// let SEARCH_QUERY = ``;
+const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
+const INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${SEARCH_QUERY}&limitLicense=true&number=10&ranking=1`;
+const GET_RECIPE_STRING = `${recipe-id}/information?includeNutrition=true`;
+const GET_SUMMARY_RESULTS = `${recipe-id}/summary`;
 
+/* callApi takes a base url, query string, and 
+ * callback upon successful api request, will 
+ * perform callback. upon error, will run apiError
+ * function to log errors to the console. Will call
+ * setHeader before the api request for auth etc
+ –––––––––––––––––––––––––––––––––––––––––––––––––– */
+function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function. 
+    $.ajax({
+        url: `${baseUrl}${query}`,
+        type: 'GET',
+        dataType: 'json',
+        success: callback,
+        error: apiError,
+        beforeSend: setHeader
+    });
+}
 
+// For sending headers on the API Request
+function setHeader(xhr) {
+  xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');
+}
 
-/*
+// Basic Error Handling
+function apiError(jqXHR, textStatus, errorThrown) {
+    alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
+    console.log(`/--------------------`);
+    console.log('jqXHR:');
+    console.log(jqXHR);
+    console.log('textStatus:');
+    console.log(textStatus);
+    console.log('errorThrown:');
+    console.log(errorThrown);
+    console.log(`/--------------------`);
+}
+
+// test function to be passed as callback verify correct response
+function apiTest(data){
+    console.log(data);
+}
+
+/* Watch for Form Submit
+ * when the form is submitted, make an array of values
+ * Traverse the Array and fill a string with non-empty values
+ * Pop the comma off the end of the string
+ * return the string for API call.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+function onFormSubmit(){
+    $('#js-search-form').submit(function(event){
+        event.stopPropagation();
+        event.preventDefault();
+        let jsIngredients = $(this).serializeArray(); // Array of values
+        let ingredientString = ""; // empty string
 
+        for (let k = 0; k<jsIngredients.length; k++) {
+            if (jsIngredients[k].value) { // if non-empty
+            ingredientString +=  `${jsIngredients[k].value},`; // concat on to the string
+            }
+        }
+        ingredientString = ingredientString.slice(0,ingredientString.length-1); // remove that comma
+        console.log(ingredientString); // return!
+    })
 
+}
 
-/*
+/* Dynamically add form fields as needed max 10.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
+function increaseFormFields (i){
+    if (i<=10) { // limit to 10 items or less. i is 1-indexed here.
+        console.log(`Increasing Fields`);
+        let j = i;
+        $('#js-search-form input:text:last').prev().on('change',
+            function(){
+                $('#js-search-form input:text:last').after(
+                    `<input type="text" placeholder="Chicken Breast" id="ingredient-${j}" name="ingredient-${j}" >`
+                );
+                j++;
+                increaseFormFields(j);
+            }
+        );
+    }
+}
 
-
-
-/*
+/* Toss "Similar recipes ..." from the end of summary
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-
-
-
-
-
-
-
-
+function getRidOfSimilar (myStr) {
+    let myStr = myStr;
+    let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
+    newStr += "</p>";
+    return newStr;
+}
 
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
+    increaseFormFields(3); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
+    onFormSubmit(); 
     console.log('Jinkies!');
 };
 $(jinkies);
