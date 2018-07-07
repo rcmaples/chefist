@@ -79,7 +79,7 @@ let recipeId = ""; //
 let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green beans,corn on the cob`; /* for initial test and QA. */
 // let SEARCH_QUERY = ``;
 const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
-const INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${SEARCH_QUERY}&limitLicense=true&number=10&ranking=1`;
+const INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${SEARCH_QUERY}&limitLicense=true&number=2&ranking=1`;
 const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
 
 
@@ -102,8 +102,12 @@ function callApi(baseUrl, query, callback) { // Generalized for portability. On 
 
 // For sending headers on the API Request
 function setHeader(xhr) {
-  xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');
+  //xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');  //about to go over quota, using other key below.
+  xhr.setRequestHeader('X-Mashape-Key', 'yB6rBrVNkAmshmK9hd1NgffQUVvZp1JQkYbjsnn8OTIJU5rVgv');
 }
+
+
+
 
 // Basic Error Handling
 function apiError(jqXHR, textStatus, errorThrown) {
@@ -201,7 +205,7 @@ async function makeSummaryCard(data){
             //caloriesPerServing: await getDetails(data[i].id),
         });
     }
-    console.log(summaryCardsArr);
+    //console.log(summaryCardsArr);
     //getSummaryString(data[0].id);
 }
 
