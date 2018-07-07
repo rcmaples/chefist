@@ -81,7 +81,7 @@ let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green bean
 const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
 const INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${SEARCH_QUERY}&limitLicense=true&number=10&ranking=1`;
 const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
-const GET_SUMMARY_RESULTS = `${recipeId}/summary`;
+
 
 /* callApi takes a base url, query string, and
  * callback upon successful api request, will
@@ -122,6 +122,11 @@ function apiError(jqXHR, textStatus, errorThrown) {
 function apiTest(data){
     console.log(data);
 }
+/* End API Section :)
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+/* Form Section :)
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 /* Watch for Form Submit
  * when the form is submitted, make an array of values
@@ -138,13 +143,13 @@ function onFormSubmit(){
 
         for (let k = 0; k<jsIngredients.length; k++) {
             if (jsIngredients[k].value) { // if non-empty
-            ingredientString +=  `${jsIngredients[k].value},`; // concat on to the string
+            ingredientString +=  `${jsIngredients[k].value},`; // concat on to the string, adds a comma after each word, also adds a trailing comma at the end.
             }
         }
-        ingredientString = ingredientString.slice(0,ingredientString.length-1); // remove that comma
-        console.log(ingredientString); // return!
+        ingredientString = ingredientString.slice(0,ingredientString.length-1); // remove the trailing comma
+        // console.log(ingredientString); // return!
         SEARCH_QUERY = ingredientString;
-        callApi(SPOON_BASE_URL, INGREDIENT_SEARCH_STRING, apiTest);
+        callApi(SPOON_BASE_URL, INGREDIENT_SEARCH_STRING, makeSummaryCard); // global ingredient_search_string is defined above and uses global search_query
     })
 
 }
@@ -153,7 +158,7 @@ function onFormSubmit(){
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function increaseFormFields (i){
     if (i<=10) { // limit to 10 items or less. i is 1-indexed here.
-        console.log(`Increasing Fields`);
+        // console.log(`Increasing Fields`);
         let j = i;
         $('#js-search-form input:text:last').prev().on('change',
             function(){
@@ -167,14 +172,65 @@ function increaseFormFields (i){
     }
 }
 
+/* End Form Section
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+
+/* Summary Cards
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+// Make an array of objects to populate cards.
+const summaryCardsArr = [];
+
+/*
+Fill initial card data (id, title) from first api call on form submit
+Then loop through results calling the api again for each result using GET_SUMMARY_RESULTS query; put function in summary value; return the summary.
+For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
+*/
+
+async function makeSummaryCard(data){
+    //console.log(data);
+    for (let i=0; i<data.length; i++) {
+        summaryCardsArr.push({
+            id: data[i].id,
+            title: data[i].title,
+            summary: await getSummaryString(data[i].id)
+        });
+    }
+    console.log(summaryCardsArr);
+    //getSummaryString(data[0].id);
+}
+
+async function getSummaryString(id) {
+    let GET_SUMMARY_RESULTS = `${id}/summary`;
+    return callApi(SPOON_BASE_URL, GET_SUMMARY_RESULTS, await concatSummary);
+
+}
+
+function concatSummary(data) {
+    console.log(`/---------------------------`);
+    console.log(data.summary);
+    //getRidOfSimilar(data.summary);
+    return data.summary;
+
+}
+
+
 /* Toss "Similar recipes ..." from the end of summary
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function getRidOfSimilar (myStr) {
-    let myStr = myStr;
+    //let myStr = myStr;
+    //console.log(myStr);
     let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
     newStr += "</p>";
-    return newStr;
+    //console.log(newStr);
+    return(newStr);
 }
+
+/* End Summary Cards
+–––––––––––––––––––––––––––––––––––––––––––––––––– */
+
+
 
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
