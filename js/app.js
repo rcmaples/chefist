@@ -196,7 +196,7 @@ async function makeSummaryCard(data){
             title: data[i].title,
             image: `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
             summary: await getSummaryString(data[i].id),
-            //follow props aren't ready yet; will write once I have async working.
+            //following props aren't ready yet; will write once I have async working.
             //readyInMinutes: await getDetails(data[i].id),
             //caloriesPerServing: await getDetails(data[i].id),
         });
@@ -211,7 +211,7 @@ async function getSummaryString(id) {
 
 }
 
-function concatSummary(data) {
+async function concatSummary(data) {
     console.log(`/---------------------------`);
     console.log(data.summary);
     //getRidOfSimilar(data.summary);
