@@ -194,7 +194,11 @@ async function makeSummaryCard(data){
         summaryCardsArr.push({
             id: data[i].id,
             title: data[i].title,
-            summary: await getSummaryString(data[i].id)
+            image: `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
+            summary: await getSummaryString(data[i].id),
+            //follow props aren't ready yet; will write once I have async working.
+            //readyInMinutes: await getDetails(data[i].id),
+            //caloriesPerServing: await getDetails(data[i].id),
         });
     }
     console.log(summaryCardsArr);
