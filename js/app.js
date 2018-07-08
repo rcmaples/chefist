@@ -70,10 +70,10 @@
 
 
 
-/* API Section :)
+/* API Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-// TODO: remove recipeId from global scope; will use for testing and to prevent js erro on line 81/82 for now.
+// TODO: remove recipeId from global scope; will use for testing and to prevent js errorls on line 81/82 for now.
 // TODO: CLEAN UP GLOBAL VARS IF NOT NEEDED!
 let recipeId = ""; //
 let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green beans,corn on the cob`; /* for initial test and QA. */
@@ -90,7 +90,7 @@ const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
  * setHeader before the api request for auth etc
  –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function.
-     $.ajax({
+    $.ajax({
         url: `${baseUrl}${query}`,
         type: 'GET',
         dataType: 'json',
@@ -208,15 +208,16 @@ function makeSummaryCard(data){
 
 function getSummaryString(id) {
     let GET_SUMMARY_RESULTS = `${id}/summary`;
-    return callApi(SPOON_BASE_URL, GET_SUMMARY_RESULTS, concatSummary);
+    let someJSON =  callApi(SPOON_BASE_URL, GET_SUMMARY_RESULTS);
+    return someJSON.responseJSON.summary;
 }
 
-function concatSummary(data) {
-    console.log(`/---------------------------`);
-    console.log(data.summary);
-    //getRidOfSimilar(data.summary);
-    return data.summary;
-}
+// function concatSummary(data) {
+//     console.log(`/---------------------------`);
+//     console.log(data.summary);
+//     //getRidOfSimilar(data.summary);
+//     //return data.summary;
+// }
 
 
 /* Toss "Similar recipes ..." from the end of summary
