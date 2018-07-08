@@ -90,7 +90,7 @@ const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
  * setHeader before the api request for auth etc
  –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function.
-    $.ajax({
+    return $.ajax({
         url: `${baseUrl}${query}`,
         type: 'GET',
         dataType: 'json',
@@ -120,9 +120,9 @@ function apiError(jqXHR, textStatus, errorThrown) {
 }
 
 // test function to be passed as callback verify correct response
-function apiTest(data){
-    console.log(data);
-}
+// function apiTest(data){
+//     console.log(data);
+// }
 /* End API Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
@@ -191,25 +191,34 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 
 function makeSummaryCard(data){
     //console.log(data);
-    for (let i=0; i<data.length; i++) {
+    for (let i=0; i<2; i++) { //TODO: Set back to i<data.length)
         summaryCardsArr.push({
             id: data[i].id,
             title: data[i].title,
             image: `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
-            summary: getSummaryString(data[i].id),
+            summary: getSummaryString(data[i].id)
             //following props aren't ready yet; will write once I have async working.
             //readyInMinutes: await getDetails(data[i].id),
             //caloriesPerServing: await getDetails(data[i].id),
         });
     }
-    //console.log(summaryCardsArr);
+    console.log(summaryCardsArr);
     //getSummaryString(data[0].id);
 }
 
 function getSummaryString(id) {
     let GET_SUMMARY_RESULTS = `${id}/summary`;
-    let someJSON =  callApi(SPOON_BASE_URL, GET_SUMMARY_RESULTS);
-    return someJSON.responseJSON.summary;
+    return new Promise((resolve, reject) => {
+        let someJSON =  callApi(SPOON_BASE_URL, GET_SUMMARY_RESULTS)
+          .then((result) => {
+            return result;
+        })
+          .then((result) => {
+              return (result.summary);
+          })
+          .done(resolve)
+          .fail(reject);
+        })
 }
 
 // function concatSummary(data) {
