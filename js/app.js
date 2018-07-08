@@ -90,7 +90,7 @@ const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
  * setHeader before the api request for auth etc
  –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function.
-    $.ajax({
+     $.ajax({
         url: `${baseUrl}${query}`,
         type: 'GET',
         dataType: 'json',
@@ -105,9 +105,6 @@ function setHeader(xhr) {
   //xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');  //about to go over quota, using other key below.
   xhr.setRequestHeader('X-Mashape-Key', 'yB6rBrVNkAmshmK9hd1NgffQUVvZp1JQkYbjsnn8OTIJU5rVgv');
 }
-
-
-
 
 // Basic Error Handling
 function apiError(jqXHR, textStatus, errorThrown) {
@@ -126,10 +123,10 @@ function apiError(jqXHR, textStatus, errorThrown) {
 function apiTest(data){
     console.log(data);
 }
-/* End API Section :)
+/* End API Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-/* Form Section :)
+/* Form Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 /* Watch for Form Submit
@@ -192,14 +189,14 @@ Then loop through results calling the api again for each result using GET_SUMMAR
 For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 */
 
-async function makeSummaryCard(data){
+function makeSummaryCard(data){
     //console.log(data);
     for (let i=0; i<data.length; i++) {
         summaryCardsArr.push({
             id: data[i].id,
             title: data[i].title,
             image: `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
-            summary: await getSummaryString(data[i].id),
+            summary: getSummaryString(data[i].id),
             //following props aren't ready yet; will write once I have async working.
             //readyInMinutes: await getDetails(data[i].id),
             //caloriesPerServing: await getDetails(data[i].id),
@@ -209,18 +206,16 @@ async function makeSummaryCard(data){
     //getSummaryString(data[0].id);
 }
 
-async function getSummaryString(id) {
+function getSummaryString(id) {
     let GET_SUMMARY_RESULTS = `${id}/summary`;
-    return callApi(SPOON_BASE_URL, GET_SUMMARY_RESULTS, await concatSummary);
-
+    return callApi(SPOON_BASE_URL, GET_SUMMARY_RESULTS, concatSummary);
 }
 
-async function concatSummary(data) {
+function concatSummary(data) {
     console.log(`/---------------------------`);
     console.log(data.summary);
     //getRidOfSimilar(data.summary);
     return data.summary;
-
 }
 
 
