@@ -1,4 +1,4 @@
-{
+js = {
     "vegetarian": false,
     "vegan": false,
     "glutenFree": false,
@@ -1874,4 +1874,4 @@
         }
     ],
     "creditsText": "Foodista.com – The Cooking Encyclopedia Everyone Can Edit"
-}
+};
