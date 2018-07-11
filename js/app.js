@@ -70,16 +70,13 @@
 
 
 
-/* API Section :)
+/* API Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-// TODO: remove recipeId from global scope; will use for testing and to prevent js erro on line 81/82 for now.
+// TODO: remove recipeId from global scope; will use for testing and to prevent js errorls on line 81/82 for now.
 // TODO: CLEAN UP GLOBAL VARS IF NOT NEEDED!
 let recipeId = ""; //
-let SEARCH_QUERY = `chicken breast,split peas,mangos,olive oil,butter,green beans,corn on the cob`; /* for initial test and QA. */
-// let SEARCH_QUERY = ``;
 const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
-const INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${SEARCH_QUERY}&limitLicense=true&number=10&ranking=1`;
 const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
 
 
@@ -90,7 +87,8 @@ const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
  * setHeader before the api request for auth etc
  –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function.
-    $.ajax({
+    console.log(`api was called with ${query}`);
+    return $.ajax({
         url: `${baseUrl}${query}`,
         type: 'GET',
         dataType: 'json',
@@ -102,12 +100,14 @@ function callApi(baseUrl, query, callback) { // Generalized for portability. On 
 
 // For sending headers on the API Request
 function setHeader(xhr) {
-  xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');
+  //xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');  //about to go over quota, using other key below.
+//   xhr.setRequestHeader('X-Mashape-Key', 'yB6rBrVNkAmshmK9hd1NgffQUVvZp1JQkYbjsnn8OTIJU5rVgv'); // More quotas...
+  xhr.setRequestHeader('X-Mashape-Key', 'P5HNiYA1rwmshLxvgqpnK55DCX5Wp1mSLTZjsnrG21Zd27gPoU');
 }
 
 // Basic Error Handling
 function apiError(jqXHR, textStatus, errorThrown) {
-    alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
+    //alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
     console.log(`/--------------------`);
     console.log('jqXHR:');
     console.log(jqXHR);
@@ -119,13 +119,13 @@ function apiError(jqXHR, textStatus, errorThrown) {
 }
 
 // test function to be passed as callback verify correct response
-function apiTest(data){
-    console.log(data);
-}
-/* End API Section :)
+// function apiTest(data){
+//     console.log(data);
+// }
+/* End API Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-/* Form Section :)
+/* Form Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 /* Watch for Form Submit
@@ -138,6 +138,7 @@ function onFormSubmit(){
     $('#js-search-form').submit(function(event){
         event.stopPropagation();
         event.preventDefault();
+        console.log('form submitted...');
         let jsIngredients = $(this).serializeArray(); // Array of values
         let ingredientString = ""; // empty string
 
@@ -148,7 +149,7 @@ function onFormSubmit(){
         }
         ingredientString = ingredientString.slice(0,ingredientString.length-1); // remove the trailing comma
         // console.log(ingredientString); // return!
-        SEARCH_QUERY = ingredientString;
+        let INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${ingredientString}&limitLicense=true&number=2&ranking=1`;
         callApi(SPOON_BASE_URL, INGREDIENT_SEARCH_STRING, makeSummaryCard); // global ingredient_search_string is defined above and uses global search_query
     })
 
@@ -188,36 +189,51 @@ Then loop through results calling the api again for each result using GET_SUMMAR
 For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 */
 
-async function makeSummaryCard(data){
+function makeSummaryCard(data){
     //console.log(data);
-    for (let i=0; i<data.length; i++) {
+    for (let i=0; i<2; i++) { //TODO: Set back to i<data.length)
+
+        // populate ID, Title, and Image
         summaryCardsArr.push({
-            id: data[i].id,
-            title: data[i].title,
-            image: `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
-            summary: await getSummaryString(data[i].id),
-            //following props aren't ready yet; will write once I have async working.
-            //readyInMinutes: await getDetails(data[i].id),
-            //caloriesPerServing: await getDetails(data[i].id),
+            "id": data[i].id,
+            "title": `${data[i].title}`,
+            "image": `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
+        });
+
+        // populate Summary
+        $.ajax({
+            url: `${SPOON_BASE_URL}${data[i].id}/summary`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                        summaryCardsArr[i]["summary"] = `${response.summary}`
+                        },
+            error: apiError,
+            beforeSend: setHeader
+        });
+
+        // populate time in minutes / caloris
+        $.ajax({
+            url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                summaryCardsArr[i]["calories"] = Math.round(response.nutrition.nutrients["0"].amount);
+                summaryCardsArr[i]["cookTime"] = response.readyInMinutes;
+                },
+            error: apiError,
+            beforeSend: setHeader
         });
     }
-    console.log(summaryCardsArr);
-    //getSummaryString(data[0].id);
+    //console.log(summaryCardsArr);
 }
 
-async function getSummaryString(id) {
-    let GET_SUMMARY_RESULTS = `${id}/summary`;
-    return callApi(SPOON_BASE_URL, GET_SUMMARY_RESULTS, await concatSummary);
-
-}
-
-async function concatSummary(data) {
-    console.log(`/---------------------------`);
-    console.log(data.summary);
-    //getRidOfSimilar(data.summary);
-    return data.summary;
-
-}
+// function concatSummary(data) {
+//     console.log(`/---------------------------`);
+//     console.log(data.summary);
+//     //getRidOfSimilar(data.summary);
+//     //return data.summary;
+// }
 
 
 /* Toss "Similar recipes ..." from the end of summary
