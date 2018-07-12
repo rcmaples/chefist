@@ -316,7 +316,7 @@ makeRecipeCard(idNum){
         title
     */
 
-    $('.js-recipe-card').append(`
+    $('.js-recipe-card').toggleClass('clip').append(`
     <img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
     <div class="recipe-card-content">
         <h3>${data.title}</h3>
