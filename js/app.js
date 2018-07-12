@@ -191,8 +191,9 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 
 function makeSummaryCard(data){
     //console.log(data);
+    let arrState = 0;
     for (let i=0; i<2; i++) { //TODO: Set back to i<data.length)
-
+        console.log(`inner arrState = ${arrState}`);
         // populate ID, Title, and Image
         summaryCardsArr.push({
             "id": data[i].id,
@@ -206,57 +207,168 @@ function makeSummaryCard(data){
             type: 'GET',
             dataType: 'json',
             success: function (response) {
-                        summaryCardsArr[i]["summary"] = `${response.summary}`
+                summaryCardsArr[i]["summary"] = `${response.summary.slice(0,608)}`; // TODO: remove slice;
+
+                $.ajax({
+                    url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        arrState++;
+                        summaryCardsArr[i]["calories"] = Math.round(response.nutrition.nutrients["0"].amount);
+                        summaryCardsArr[i]["cookTime"] = response.readyInMinutes;
+                        console.log(`arrState = ${arrState}`);
+
+                        if (arrState == data.length){
+                            displaySummaryResults(summaryCardsArr); // Pass the Array off to let jQuery build the html for them.};
+                        }
+
                         },
+                    error: apiError,
+                    beforeSend: setHeader
+                });
+
+             },
+
             error: apiError,
             beforeSend: setHeader
+
         });
 
         // populate time in minutes / caloris
-        $.ajax({
-            url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                summaryCardsArr[i]["calories"] = Math.round(response.nutrition.nutrients["0"].amount);
-                summaryCardsArr[i]["cookTime"] = response.readyInMinutes;
-                },
-            error: apiError,
-            beforeSend: setHeader
-        });
+
     }
-    //console.log(summaryCardsArr);
+
 }
 
-// function concatSummary(data) {
-//     console.log(`/---------------------------`);
-//     console.log(data.summary);
-//     //getRidOfSimilar(data.summary);
-//     //return data.summary;
-// }
+/* Summary Cards Results Rendered as LIs.
+-------------------------------------------------- */
+function displaySummaryResults(arr){
+    for (let i=0; i<arr.length; i++){
+        $(".js-summary-card").append(`
+            <li class="summary-card" id="${arr[1].id}">
+                <img src="https://spoonacular.com/recipeImages/${arr[i].id}-556x370.jpg" alt="${arr[i].title}">
+                <div class="summary-card-content">
+                    <h3>${arr[i].title}</h3>
+                    <ul class="summary-card-specs">
+                        <li>
+                            <img class="specs" alt="Cook Time" src="${cookTimeImg}">
+                            <p>${arr[i].cookTime}</p>
+                        </li>
+                        <li>
+                            <img class="specs" alt="Number of Calories" src="${calorieImg}">
+                            <p>${arr[i].calories} calories per serving</p>
+                        </li>
+                    </ul>
+                    ${arr[1].summary}
+                </div>
+            </li>
+        `);
+    }
+}
+
 
 
 /* Toss "Similar recipes ..." from the end of summary
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-function getRidOfSimilar (myStr) {
-    //let myStr = myStr;
-    //console.log(myStr);
-    let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
-    newStr += "</p>";
-    //console.log(newStr);
-    return(newStr);
+// function getRidOfSimilar (myStr) {
+//     //let myStr = myStr;
+//     //console.log(myStr);
+//     let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
+//     newStr += "</p>";
+//     //console.log(newStr);
+//     return(newStr);
+// }
+
+/* Summary Card Event Watcher
+-------------------------------------------------- */
+
+function watchSummary(){
+    console.log('watching');
+    $("li").click(function(event){
+        event.PreventDefault;
+        event.stopPropagation;
+        alert("HI");
+        // makeRecipeCard(event.id)
+    });
 }
 
 /* End Summary Cards
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
+/* Make the Recipe Card
+-------------------------------------------------- */
+
+makeRecipeCard(idNum){
+
+    //call ajax might be able to use callApi here.
+    $.ajax({
+        url: `${SPOON_BASE_URL}${didNum}/information?includeNutrition=true`,
+        type: 'GET',
+        dataType: 'json',
+        success:
+        error: apiError,
+        beforeSend: setHeader
+    });
+
+    /*place static peices into html via jquery
+        image / alt
+        title
+    */
+
+    $('.js-recipe-card').append(`
+    <img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
+    <div class="recipe-card-content">
+        <h3>${data.title}</h3>
+        <table class="js-ingredients-table">
+            <caption>Ingredients:</caption>
+            <tbody class="js-ingredients-list">` // <-- remove that back tick
+
+    // loop through ingredients array and fill list
+    // may be stand alone function
+    // extendedIngredients[i].image
+    // extendedIngredients[i].amount
+    // extendedIngredients[i].unit
+    // extendedIngredients[i].name
+    //----------------
+            // $('.js-ingredients-list').append(
+            // <tr>
+            //   <td class="js-ingredient-image"><img alt="" class="u-max-full-width" src="https://spoonacular.com/cdn/ingredients_100x100/${extendedIngredients[i].image}"></td>
+            //   <td class="js-ingredient-serving">${extendedIngredients[i].amount} ${extendedIngredients[i].unit}</td>
+            //   <td class="js-ingredient-name">${extendedIngredients[i].name}</td>
+            // </tr>
+            // `); remove the tick mark on 347
+            `</tbody>
+        </table>
+        <p class="js-instructions">Instructions:</p>`
+        // append instructions after the .js-instructions p element
+        // $('.js-instructions').after(`
+        //     ${data.instructions}
+        // `);
+        `<span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
+    </div>
+    `)
+
+
+}
 
 
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
+    watchSummary();
+    $('.js-summary-card').empty(); // make sure there aren't any results before search!
     increaseFormFields(3); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
     onFormSubmit();
     console.log('Jinkies!');
 };
 $(jinkies);
+
+
+
+/* storing svg in a string for readability above. */
+
+const cookTimeImg = `data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMzAwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2YxODcwMTt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPkFydGJvYXJkIDE8L3RpdGxlPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTE1MC42LDI2NS44N2MtNTAuNDcsMC05MS40NS00MS4zMS05MS40NS05MS40NFMxMDAuNDYsODMsMTUwLjYsODNzOTEuMTIsNDEuNjEsOTEuMTIsOTEuNDMtNDAuNjQsOTEuNDUtOTEuMTIsOTEuNDVaTTIzOC40NCw4NS45MmwtMS0xLDEyLjEyLTE3QTExLjQxLDExLjQxLDAsMCwwLDI0Nyw1Mi40OUwyMzEuODksNDJhMTEuNDEsMTEuNDEsMCwwLDAtMTUuNCwyLjYyTDIwNC4zNiw2MS42N2MtOS44My00LjkyLTIxLTguMi0zMS43OS0xMC40OVYzOC4wN2ExMi41OSwxMi41OSwwLDAsMCwxMi43OC0xMi43OFYxNS43OEExMi41OSwxMi41OSwwLDAsMCwxNzIuNTcsM0gxMjcuMzNhMTIuNTksMTIuNTksMCwwLDAtMTIuNzgsMTIuNzh2OS44M2ExMi41OSwxMi41OSwwLDAsMCwxMi43OCwxMi43OEgxMjhWNTEuNUExMjAuODIsMTIwLjgyLDAsMCwwLDYyLjEsODYuMjUsMTIzLjgsMTIzLjgsMCwwLDAsMjUuNzEsMTc0LjFjMCwzMi43NywxMy4xMSw2NC45LDM2LjM5LDg3Ljg0YTEyMy43NywxMjMuNzcsMCwwLDAsODcuODQsMzYuMzljMzIuNzgsMCw2NC45MS0xMy4xMSw4Ny44NS0zNi4zOWExMjMuNzcsMTIzLjc3LDAsMCwwLDM2LjM5LTg3Ljg0YzAtMzIuNzgtMTIuMTQtNjQuNTctMzUuNzMtODguMThaIi8+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTYxLjA4LDE1NC4xYy0yMS4zLTEzLjExLTcxLjQ2LTM4LjM1LTczLjc1LTM5cy00LjkxLDAtNy4yLDIuMjljLTEuNjQsMi4yOS0yLjMsNC45Mi0uNjYsNy4yMWEuNjQuNjQsMCwwLDAsLjY2LjY1YzMuOTMsNS45LDM3LjM1LDQ1LjU1LDUzLjQzLDYyLjYxbDMuMjcsMy4yOGM5LjUsNy41NCwyMy42LDUuOSwzMS40Ny0zLjI4LDcuNTUtOS41LDUuOTEtMjMuNi0zLjI3LTMxLjQ3YTE2LDE2LDAsMCwwLTMuOTUtMi4yOVoiLz48L3N2Zz4=`;
+
+const calorieImg = `data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMzAwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6bm9uZTtzdHJva2U6IzNkMzQ4YjtzdHJva2UtbWl0ZXJsaW1pdDoxMDtzdHJva2Utd2lkdGg6Ny4wNXB4O30uY2xzLTJ7ZmlsbDojM2QzNDhiO308L3N0eWxlPjwvZGVmcz48dGl0bGU+TnV0cml0aW9uPC90aXRsZT48cmVjdCBjbGFzcz0iY2xzLTEiIHg9IjM3LjIxIiB5PSI3IiB3aWR0aD0iMjI1LjU4IiBoZWlnaHQ9IjI4NSIgcng9IjQxLjYiIHJ5PSI0MS42Ii8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNNTguODUsODcuMjVoMTg0djYuMzJoLTE4NFoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01OC44NSwxMjIuNTdoMTg0djYuMzJoLTE4NFoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01OC44NSwxOTMuMmgxODR2Ni4zMWgtMTg0WiIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU4Ljg1LDIyOC41MWgxODR2Ni4zMmgtMTg0WiIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU4Ljg1LDI2My44MmgxODR2Ni4zMmgtMTg0WiIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU4Ljg1LDEwMC42M0g5Mi41MnYxNS43OUg1OC44NVoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yMjYsMTAwLjE3aDE2Ljg1VjExNkgyMjZaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjIwLjE5LDE3MC43OWgyMi42M3YxNS43OUgyMjAuMTlaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjI5LjI0LDIwNi4xMWgxMy41OVYyMjEuOUgyMjkuMjRaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjEzLjE1LDY0Ljg3aDI5LjY2VjgwLjY1SDIxMy4xNVoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01OC44NSwxMzUuODRoNDcuNzR2MTUuNzlINTguODVaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjI5LjI0LDI0MS40M2gxMy41OXYxNS43OEgyMjkuMjRaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjI5LjI0LDEzNS40OGgxMy41OXYxNS43OUgyMjkuMjRaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNNTguODUsMTcxLjA2aDM4LjJ2MTUuNzlINTguODVaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNNTguODUsMjA2LjI2aDYwLjMxdjE1Ljc5SDU4Ljg1WiIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU4Ljg1LDI0MS40OEg5NC41M3YxNS43OUg1OC44NVoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01OC44NSwxNTcuODhoMTg0djYuMzJoLTE4NFoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik05Ny4yMiwzMS4wNWMtNy42NywwLTEwLDIuNDgtMTIuNDQsMi40OFM4MCwzMS4wNSw3Mi4zNCwzMS4wNXMtMTMuNDgsOC0xMy40OCwxNi44Niw4LjcxLDI5LjU4LDE4LjI1LDI5LjU4YzUsMCw2LjIyLTEuMjQsNy42Ny0xLjI0czIuNjksMS4yNCw3LjY3LDEuMjRjOS41NCwwLDE4LjI0LTIwLjc0LDE4LjI0LTI5LjU4UzEwNC44OSwzMS4wNSw5Ny4yMiwzMS4wNVoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik04NC43OSwzMS4yMWEzLjE0LDMuMTQsMCwwLDEtMy4xMy0yLjg4QzgxLjM2LDI1LDgyLjYsMTgsODkuMzEsMTUuNTVhMy4xNiwzLjE2LDAsMCwxLDIuMTgsNS45NEM4Ny41NywyMi45Myw4OCwyNy43Niw4OCwyNy44YTMuMTYsMy4xNiwwLDAsMS0yLjg4LDMuNDEsMi42MSwyLjYxLDAsMCwwLS4yOCwwWiIvPjwvc3ZnPg==`;
+
