@@ -299,57 +299,54 @@ function watchSummary(){
 /* Make the Recipe Card
 -------------------------------------------------- */
 
-makeRecipeCard(idNum){
-
+function makeRecipeCard(idNum){
     //call ajax might be able to use callApi here.
     $.ajax({
-        url: `${SPOON_BASE_URL}${didNum}/information?includeNutrition=true`,
+        url: `${SPOON_BASE_URL}${idNum}/information?includeNutrition=true`,
         type: 'GET',
         dataType: 'json',
-        success:
+        success: data => {
+
+            console.log(data);
+            // begin filling in recipe card
+            $('.js-recipe-card').toggleClass('clip').append(`
+                <img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
+                <div class="recipe-card-content">
+                <h3>${data.title}</h3>
+                <table class="js-ingredients-table">
+                    <caption>Ingredients:</caption>
+                    <tbody class="js-ingredients-list">
+            `);
+
+                //loop through ingredients array
+                for (let i=0; i<data.extendedIngredients.length; i++){
+                    console.log(i);
+
+                    $('.js-ingredients-list').append(`
+                        <tr>
+                            <td class="js-ingredient-image"><img alt="" class="u-max-full-width" src="https://spoonacular.com/cdn/ingredients_100x100/${data.extendedIngredients[i].image}"></td>
+                            <td class="js-ingredient-serving">${data.extendedIngredients[i].amount} ${data.extendedIngredients[i].unit}</td>
+                            <td class="js-ingredient-name">${data.extendedIngredients[i].name}</td>
+                        </tr>
+                    `);
+                }
+
+                $('tbody').append(`
+                    </tbody>
+                    </table>
+                `);
+
+                $('table').after(`
+
+                    <p class="js-instructions">Instructions:</p>
+                    ${data.instructions}
+                    <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
+                </div>
+                `);
+        },
         error: apiError,
         beforeSend: setHeader
     });
-
-    /*place static peices into html via jquery
-        image / alt
-        title
-    */
-
-    $('.js-recipe-card').toggleClass('clip').append(`
-    <img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
-    <div class="recipe-card-content">
-        <h3>${data.title}</h3>
-        <table class="js-ingredients-table">
-            <caption>Ingredients:</caption>
-            <tbody class="js-ingredients-list">` // <-- remove that back tick
-
-    // loop through ingredients array and fill list
-    // may be stand alone function
-    // extendedIngredients[i].image
-    // extendedIngredients[i].amount
-    // extendedIngredients[i].unit
-    // extendedIngredients[i].name
-    //----------------
-            // $('.js-ingredients-list').append(
-            // <tr>
-            //   <td class="js-ingredient-image"><img alt="" class="u-max-full-width" src="https://spoonacular.com/cdn/ingredients_100x100/${extendedIngredients[i].image}"></td>
-            //   <td class="js-ingredient-serving">${extendedIngredients[i].amount} ${extendedIngredients[i].unit}</td>
-            //   <td class="js-ingredient-name">${extendedIngredients[i].name}</td>
-            // </tr>
-            // `); remove the tick mark on 347
-            `</tbody>
-        </table>
-        <p class="js-instructions">Instructions:</p>`
-        // append instructions after the .js-instructions p element
-        // $('.js-instructions').after(`
-        //     ${data.instructions}
-        // `);
-        `<span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
-    </div>
-    `)
-
-
 }
 
 
