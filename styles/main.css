@@ -308,7 +308,8 @@ ul li {
 }
 
 ol li {
-    margin-bottom: -3rem;
+    list-style-type: none;
+    margin-bottom: 3rem;
 }
 
 .js-credit-text {
@@ -337,7 +338,7 @@ table.js-ingredients-table {
     table-layout: fixed;
     width: 100%;
     white-space: nowrap;
-    margin-bottom: -4rem;
+    /* margin-bottom: -4rem; */
   }
 
   .js-ingredients-table td {
@@ -404,7 +405,7 @@ table.js-ingredients-table {
 .js-instructions {
     font-size: 2.4rem;
     margin-top: 2.4rem;
-    margin-bottom: -8.5rem;
+    margin-bottom: -3.5rem;
 
 }
 

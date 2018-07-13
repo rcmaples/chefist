@@ -75,7 +75,7 @@
 
 // TODO: remove recipeId from global scope; will use for testing and to prevent js errorls on line 81/82 for now.
 // TODO: CLEAN UP GLOBAL VARS IF NOT NEEDED!
-let recipeId = ""; //
+let recipeId = "";
 const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
 const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
 
@@ -87,7 +87,6 @@ const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
  * setHeader before the api request for auth etc
  –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function.
-    console.log(`api was called with ${query}`);
     return $.ajax({
         url: `${baseUrl}${query}`,
         type: 'GET',
@@ -138,7 +137,6 @@ function onFormSubmit(){
     $('#js-search-form').submit(function(event){
         event.stopPropagation();
         event.preventDefault();
-        console.log('form submitted...');
         let jsIngredients = $(this).serializeArray(); // Array of values
         let ingredientString = ""; // empty string
 
@@ -190,17 +188,14 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 */
 
 function makeSummaryCard(data){
-    //console.log(data);
     let arrState = 0;
     for (let i=0; i<2; i++) { //TODO: Set back to i<data.length)
-        console.log(`inner arrState = ${arrState}`);
         // populate ID, Title, and Image
         summaryCardsArr.push({
             "id": data[i].id,
             "title": `${data[i].title}`,
             "image": `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
         });
-
         // populate Summary
         $.ajax({
             url: `${SPOON_BASE_URL}${data[i].id}/summary`,
@@ -208,7 +203,6 @@ function makeSummaryCard(data){
             dataType: 'json',
             success: function (response) {
                 summaryCardsArr[i]["summary"] = `${response.summary.slice(0,608)}`; // TODO: remove slice;
-
                 $.ajax({
                     url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
                     type: 'GET',
@@ -217,28 +211,18 @@ function makeSummaryCard(data){
                         arrState++;
                         summaryCardsArr[i]["calories"] = Math.round(response.nutrition.nutrients["0"].amount);
                         summaryCardsArr[i]["cookTime"] = response.readyInMinutes;
-                        console.log(`arrState = ${arrState}`);
-
                         if (arrState == data.length){
                             displaySummaryResults(summaryCardsArr); // Pass the Array off to let jQuery build the html for them.};
-                        }
-
+                            }
                         },
                     error: apiError,
                     beforeSend: setHeader
                 });
-
              },
-
             error: apiError,
             beforeSend: setHeader
-
         });
-
-        // populate time in minutes / caloris
-
     }
-
 }
 
 /* Summary Cards Results Rendered as LIs.
@@ -246,7 +230,7 @@ function makeSummaryCard(data){
 function displaySummaryResults(arr){
     for (let i=0; i<arr.length; i++){
         $(".js-summary-card").append(`
-            <li class="summary-card" id="${arr[1].id}">
+            <li class="summary-card" id="${arr[i].id}">
                 <img src="https://spoonacular.com/recipeImages/${arr[i].id}-556x370.jpg" alt="${arr[i].title}">
                 <div class="summary-card-content">
                     <h3>${arr[i].title}</h3>
@@ -260,7 +244,7 @@ function displaySummaryResults(arr){
                             <p>${arr[i].calories} calories per serving</p>
                         </li>
                     </ul>
-                    ${arr[1].summary}
+                    ${arr[i].summary}
                 </div>
             </li>
         `);
@@ -284,7 +268,6 @@ function displaySummaryResults(arr){
 -------------------------------------------------- */
 
 function watchSummary(){
-    console.log('watching');
     $("li").click(function(event){
         event.PreventDefault;
         event.stopPropagation;
@@ -306,43 +289,75 @@ function makeRecipeCard(idNum){
         type: 'GET',
         dataType: 'json',
         success: data => {
-
-            console.log(data);
             // begin filling in recipe card
-            $('.js-recipe-card').toggleClass('clip').append(`
-                <img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
+            $('.js-recipe-card').toggleClass('clip')
+                .append(`<img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
                 <div class="recipe-card-content">
-                <h3>${data.title}</h3>
-                <table class="js-ingredients-table">
-                    <caption>Ingredients:</caption>
-                    <tbody class="js-ingredients-list">
+                    <h3>${data.title}</h3>
+                    <table class="js-ingredients-table">
+                        <caption>Ingredients:</caption>
+                        <tbody class="js-ingredients-list">
             `);
 
                 //loop through ingredients array
                 for (let i=0; i<data.extendedIngredients.length; i++){
-                    console.log(i);
-
-                    $('.js-ingredients-list').append(`
-                        <tr>
-                            <td class="js-ingredient-image"><img alt="" class="u-max-full-width" src="https://spoonacular.com/cdn/ingredients_100x100/${data.extendedIngredients[i].image}"></td>
-                            <td class="js-ingredient-serving">${data.extendedIngredients[i].amount} ${data.extendedIngredients[i].unit}</td>
-                            <td class="js-ingredient-name">${data.extendedIngredients[i].name}</td>
-                        </tr>
-                    `);
+                    // abbreviate the units of measurement
+                    let abbrvUnit;
+                    switch (data.extendedIngredients[i].unit){
+                        case 'teaspoon':
+                            abbrvUnit = 'tsp';
+                            break;
+                        case 'teaspoons':
+                            abbrvUnit = 'tsp';
+                            break;
+                        case 'tablespoon':
+                            abbrvUnit = 'Tbsp';
+                            break;
+                        case 'fluid ounce':
+                            abbrvUnit = 'fl oz';
+                            break;
+                        case 'ounce':
+                            abbrvUnit = 'oz';
+                            break;
+                        case 'cup':
+                            abbrvUnit = 'c';
+                            break;
+                        case 'pint':
+                            abbrvUnit = 'pt';
+                            break;
+                        case 'quart':
+                            abbrvUnit = 'qt';
+                            break;
+                        case 'gallon':
+                            abbrvUnit = 'gal';
+                            break;
+                        case 'milliliter':
+                            abbrvUnit = 'ml';
+                            break;
+                        case 'liter':
+                            abbrvUnit = 'L';
+                            break;
+                        default:
+                            abbrvUnit = data.extendedIngredients[i].unit;
+                    }
+                    //make table of ingredients
+                    $('tbody')
+                        .append(`<tr>
+                                <td class="js-ingredient-image"><img class="u-max-full-width" alt="${data.extendedIngredients[i].name}"  src="https://spoonacular.com/cdn/ingredients_100x100/${data.extendedIngredients[i].image}"></td>
+                                <td class="js-ingredient-serving">${data.extendedIngredients[i].amount} ${abbrvUnit}</td>
+                                <td class="js-ingredient-name">${data.extendedIngredients[i].name}</td>
+                            </tr>`);
                 }
-
-                $('tbody').append(`
-                    </tbody>
-                    </table>
-                `);
-
-                $('table').after(`
-
-                    <p class="js-instructions">Instructions:</p>
-                    ${data.instructions}
-                    <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
-                </div>
-                `);
+                //close the table
+                $('tbody')
+                    .append(`</tbody>
+                        </table>`);
+                //render the instructions
+                $('table')
+                    .after(`<p class="js-instructions">Instructions:</p>
+                            ${data.instructions}
+                            <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
+                        </div>`);
         },
         error: apiError,
         beforeSend: setHeader
