@@ -22,7 +22,11 @@ js = {
     "sourceName": "Foodista",
     "pricePerServing": 235.56,
     "extendedIngredients": [
-        {
+        {                       extendedIngredients[i].image
+                                extendedIngredients[i].amount
+                                extendedIngredients[i].unit
+                                extendedIngredients[i].name
+
             "id": 10220445,
             "aisle": "Pasta and Rice",
             "image": "rice-white-long-grain-or-basmatii-cooked.jpg",

@@ -75,7 +75,7 @@
 
 // TODO: remove recipeId from global scope; will use for testing and to prevent js errorls on line 81/82 for now.
 // TODO: CLEAN UP GLOBAL VARS IF NOT NEEDED!
-let recipeId = ""; //
+let recipeId = "";
 const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
 const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
 
@@ -87,7 +87,6 @@ const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
  * setHeader before the api request for auth etc
  –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function.
-    console.log(`api was called with ${query}`);
     return $.ajax({
         url: `${baseUrl}${query}`,
         type: 'GET',
@@ -138,7 +137,6 @@ function onFormSubmit(){
     $('#js-search-form').submit(function(event){
         event.stopPropagation();
         event.preventDefault();
-        console.log('form submitted...');
         let jsIngredients = $(this).serializeArray(); // Array of values
         let ingredientString = ""; // empty string
 
@@ -190,73 +188,199 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 */
 
 function makeSummaryCard(data){
-    //console.log(data);
+    let arrState = 0;
     for (let i=0; i<2; i++) { //TODO: Set back to i<data.length)
-
         // populate ID, Title, and Image
         summaryCardsArr.push({
             "id": data[i].id,
             "title": `${data[i].title}`,
             "image": `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
         });
-
         // populate Summary
         $.ajax({
             url: `${SPOON_BASE_URL}${data[i].id}/summary`,
             type: 'GET',
             dataType: 'json',
             success: function (response) {
-                        summaryCardsArr[i]["summary"] = `${response.summary}`
+                summaryCardsArr[i]["summary"] = `${response.summary.slice(0,608)}`; // TODO: remove slice;
+                $.ajax({
+                    url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        arrState++;
+                        summaryCardsArr[i]["calories"] = Math.round(response.nutrition.nutrients["0"].amount);
+                        summaryCardsArr[i]["cookTime"] = response.readyInMinutes;
+                        if (arrState == data.length){
+                            displaySummaryResults(summaryCardsArr); // Pass the Array off to let jQuery build the html for them.};
+                            }
                         },
-            error: apiError,
-            beforeSend: setHeader
-        });
-
-        // populate time in minutes / caloris
-        $.ajax({
-            url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
-            type: 'GET',
-            dataType: 'json',
-            success: function (response) {
-                summaryCardsArr[i]["calories"] = Math.round(response.nutrition.nutrients["0"].amount);
-                summaryCardsArr[i]["cookTime"] = response.readyInMinutes;
-                },
+                    error: apiError,
+                    beforeSend: setHeader
+                });
+             },
             error: apiError,
             beforeSend: setHeader
         });
     }
-    //console.log(summaryCardsArr);
 }
 
-// function concatSummary(data) {
-//     console.log(`/---------------------------`);
-//     console.log(data.summary);
-//     //getRidOfSimilar(data.summary);
-//     //return data.summary;
-// }
+/* Summary Cards Results Rendered as LIs.
+-------------------------------------------------- */
+function displaySummaryResults(arr){
+    for (let i=0; i<arr.length; i++){
+        $(".js-summary-card").append(`
+            <li class="summary-card" id="${arr[i].id}">
+                <img src="https://spoonacular.com/recipeImages/${arr[i].id}-556x370.jpg" alt="${arr[i].title}">
+                <div class="summary-card-content">
+                    <h3>${arr[i].title}</h3>
+                    <ul class="summary-card-specs">
+                        <li>
+                            <img class="specs" alt="Cook Time" src="${cookTimeImg}">
+                            <p>${arr[i].cookTime}</p>
+                        </li>
+                        <li>
+                            <img class="specs" alt="Number of Calories" src="${calorieImg}">
+                            <p>${arr[i].calories} calories per serving</p>
+                        </li>
+                    </ul>
+                    ${arr[i].summary}
+                </div>
+            </li>
+        `);
+    }
+}
+
 
 
 /* Toss "Similar recipes ..." from the end of summary
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-function getRidOfSimilar (myStr) {
-    //let myStr = myStr;
-    //console.log(myStr);
-    let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
-    newStr += "</p>";
-    //console.log(newStr);
-    return(newStr);
+// function getRidOfSimilar (myStr) {
+//     //let myStr = myStr;
+//     //console.log(myStr);
+//     let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
+//     newStr += "</p>";
+//     //console.log(newStr);
+//     return(newStr);
+// }
+
+/* Summary Card Event Watcher
+-------------------------------------------------- */
+
+function watchSummary(){
+    $("li").click(function(event){
+        event.PreventDefault;
+        event.stopPropagation;
+        alert("HI");
+        // makeRecipeCard(event.id)
+    });
 }
 
 /* End Summary Cards
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
+/* Make the Recipe Card
+-------------------------------------------------- */
+
+function makeRecipeCard(idNum){
+    //call ajax might be able to use callApi here.
+    $.ajax({
+        url: `${SPOON_BASE_URL}${idNum}/information?includeNutrition=true`,
+        type: 'GET',
+        dataType: 'json',
+        success: data => {
+            // begin filling in recipe card
+            $('.js-recipe-card').toggleClass('clip')
+                .append(`<img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
+                <div class="recipe-card-content">
+                    <h3>${data.title}</h3>
+                    <table class="js-ingredients-table">
+                        <caption>Ingredients:</caption>
+                        <tbody class="js-ingredients-list">
+            `);
+
+                //loop through ingredients array
+                for (let i=0; i<data.extendedIngredients.length; i++){
+                    // abbreviate the units of measurement
+                    let abbrvUnit;
+                    switch (data.extendedIngredients[i].unit){
+                        case 'teaspoon':
+                            abbrvUnit = 'tsp';
+                            break;
+                        case 'teaspoons':
+                            abbrvUnit = 'tsp';
+                            break;
+                        case 'tablespoon':
+                            abbrvUnit = 'Tbsp';
+                            break;
+                        case 'fluid ounce':
+                            abbrvUnit = 'fl oz';
+                            break;
+                        case 'ounce':
+                            abbrvUnit = 'oz';
+                            break;
+                        case 'cup':
+                            abbrvUnit = 'c';
+                            break;
+                        case 'pint':
+                            abbrvUnit = 'pt';
+                            break;
+                        case 'quart':
+                            abbrvUnit = 'qt';
+                            break;
+                        case 'gallon':
+                            abbrvUnit = 'gal';
+                            break;
+                        case 'milliliter':
+                            abbrvUnit = 'ml';
+                            break;
+                        case 'liter':
+                            abbrvUnit = 'L';
+                            break;
+                        default:
+                            abbrvUnit = data.extendedIngredients[i].unit;
+                    }
+                    //make table of ingredients
+                    $('tbody')
+                        .append(`<tr>
+                                <td class="js-ingredient-image"><img class="u-max-full-width" alt="${data.extendedIngredients[i].name}"  src="https://spoonacular.com/cdn/ingredients_100x100/${data.extendedIngredients[i].image}"></td>
+                                <td class="js-ingredient-serving">${data.extendedIngredients[i].amount} ${abbrvUnit}</td>
+                                <td class="js-ingredient-name">${data.extendedIngredients[i].name}</td>
+                            </tr>`);
+                }
+                //close the table
+                $('tbody')
+                    .append(`</tbody>
+                        </table>`);
+                //render the instructions
+                $('table')
+                    .after(`<p class="js-instructions">Instructions:</p>
+                            ${data.instructions}
+                            <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
+                        </div>`);
+        },
+        error: apiError,
+        beforeSend: setHeader
+    });
+}
 
 
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
+    watchSummary();
+    $('.js-summary-card').empty(); // make sure there aren't any results before search!
     increaseFormFields(3); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
     onFormSubmit();
     console.log('Jinkies!');
 };
 $(jinkies);
+
+
+
+/* storing svg in a string for readability above. */
+
+const cookTimeImg = `data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMzAwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2YxODcwMTt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPkFydGJvYXJkIDE8L3RpdGxlPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTE1MC42LDI2NS44N2MtNTAuNDcsMC05MS40NS00MS4zMS05MS40NS05MS40NFMxMDAuNDYsODMsMTUwLjYsODNzOTEuMTIsNDEuNjEsOTEuMTIsOTEuNDMtNDAuNjQsOTEuNDUtOTEuMTIsOTEuNDVaTTIzOC40NCw4NS45MmwtMS0xLDEyLjEyLTE3QTExLjQxLDExLjQxLDAsMCwwLDI0Nyw1Mi40OUwyMzEuODksNDJhMTEuNDEsMTEuNDEsMCwwLDAtMTUuNCwyLjYyTDIwNC4zNiw2MS42N2MtOS44My00LjkyLTIxLTguMi0zMS43OS0xMC40OVYzOC4wN2ExMi41OSwxMi41OSwwLDAsMCwxMi43OC0xMi43OFYxNS43OEExMi41OSwxMi41OSwwLDAsMCwxNzIuNTcsM0gxMjcuMzNhMTIuNTksMTIuNTksMCwwLDAtMTIuNzgsMTIuNzh2OS44M2ExMi41OSwxMi41OSwwLDAsMCwxMi43OCwxMi43OEgxMjhWNTEuNUExMjAuODIsMTIwLjgyLDAsMCwwLDYyLjEsODYuMjUsMTIzLjgsMTIzLjgsMCwwLDAsMjUuNzEsMTc0LjFjMCwzMi43NywxMy4xMSw2NC45LDM2LjM5LDg3Ljg0YTEyMy43NywxMjMuNzcsMCwwLDAsODcuODQsMzYuMzljMzIuNzgsMCw2NC45MS0xMy4xMSw4Ny44NS0zNi4zOWExMjMuNzcsMTIzLjc3LDAsMCwwLDM2LjM5LTg3Ljg0YzAtMzIuNzgtMTIuMTQtNjQuNTctMzUuNzMtODguMThaIi8+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMTYxLjA4LDE1NC4xYy0yMS4zLTEzLjExLTcxLjQ2LTM4LjM1LTczLjc1LTM5cy00LjkxLDAtNy4yLDIuMjljLTEuNjQsMi4yOS0yLjMsNC45Mi0uNjYsNy4yMWEuNjQuNjQsMCwwLDAsLjY2LjY1YzMuOTMsNS45LDM3LjM1LDQ1LjU1LDUzLjQzLDYyLjYxbDMuMjcsMy4yOGM5LjUsNy41NCwyMy42LDUuOSwzMS40Ny0zLjI4LDcuNTUtOS41LDUuOTEtMjMuNi0zLjI3LTMxLjQ3YTE2LDE2LDAsMCwwLTMuOTUtMi4yOVoiLz48L3N2Zz4=`;
+
+const calorieImg = `data:image/svg+xml;base64,PHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMDAgMzAwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6bm9uZTtzdHJva2U6IzNkMzQ4YjtzdHJva2UtbWl0ZXJsaW1pdDoxMDtzdHJva2Utd2lkdGg6Ny4wNXB4O30uY2xzLTJ7ZmlsbDojM2QzNDhiO308L3N0eWxlPjwvZGVmcz48dGl0bGU+TnV0cml0aW9uPC90aXRsZT48cmVjdCBjbGFzcz0iY2xzLTEiIHg9IjM3LjIxIiB5PSI3IiB3aWR0aD0iMjI1LjU4IiBoZWlnaHQ9IjI4NSIgcng9IjQxLjYiIHJ5PSI0MS42Ii8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNNTguODUsODcuMjVoMTg0djYuMzJoLTE4NFoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01OC44NSwxMjIuNTdoMTg0djYuMzJoLTE4NFoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01OC44NSwxOTMuMmgxODR2Ni4zMWgtMTg0WiIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU4Ljg1LDIyOC41MWgxODR2Ni4zMmgtMTg0WiIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU4Ljg1LDI2My44MmgxODR2Ni4zMmgtMTg0WiIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU4Ljg1LDEwMC42M0g5Mi41MnYxNS43OUg1OC44NVoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik0yMjYsMTAwLjE3aDE2Ljg1VjExNkgyMjZaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjIwLjE5LDE3MC43OWgyMi42M3YxNS43OUgyMjAuMTlaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjI5LjI0LDIwNi4xMWgxMy41OVYyMjEuOUgyMjkuMjRaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjEzLjE1LDY0Ljg3aDI5LjY2VjgwLjY1SDIxMy4xNVoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01OC44NSwxMzUuODRoNDcuNzR2MTUuNzlINTguODVaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjI5LjI0LDI0MS40M2gxMy41OXYxNS43OEgyMjkuMjRaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMjI5LjI0LDEzNS40OGgxMy41OXYxNS43OUgyMjkuMjRaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNNTguODUsMTcxLjA2aDM4LjJ2MTUuNzlINTguODVaIi8+PHBhdGggY2xhc3M9ImNscy0yIiBkPSJNNTguODUsMjA2LjI2aDYwLjMxdjE1Ljc5SDU4Ljg1WiIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTU4Ljg1LDI0MS40OEg5NC41M3YxNS43OUg1OC44NVoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01OC44NSwxNTcuODhoMTg0djYuMzJoLTE4NFoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik05Ny4yMiwzMS4wNWMtNy42NywwLTEwLDIuNDgtMTIuNDQsMi40OFM4MCwzMS4wNSw3Mi4zNCwzMS4wNXMtMTMuNDgsOC0xMy40OCwxNi44Niw4LjcxLDI5LjU4LDE4LjI1LDI5LjU4YzUsMCw2LjIyLTEuMjQsNy42Ny0xLjI0czIuNjksMS4yNCw3LjY3LDEuMjRjOS41NCwwLDE4LjI0LTIwLjc0LDE4LjI0LTI5LjU4UzEwNC44OSwzMS4wNSw5Ny4yMiwzMS4wNVoiLz48cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik04NC43OSwzMS4yMWEzLjE0LDMuMTQsMCwwLDEtMy4xMy0yLjg4QzgxLjM2LDI1LDgyLjYsMTgsODkuMzEsMTUuNTVhMy4xNiwzLjE2LDAsMCwxLDIuMTgsNS45NEM4Ny41NywyMi45Myw4OCwyNy43Niw4OCwyNy44YTMuMTYsMy4xNiwwLDAsMS0yLjg4LDMuNDEsMi42MSwyLjYxLDAsMCwwLS4yOCwwWiIvPjwvc3ZnPg==`;
+
