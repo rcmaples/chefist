@@ -444,7 +444,7 @@ td:last-child {
     height: 25rem;
     background: url(../img/loader.gif) no-repeat center;
     z-index: 10;
-    background-color: rgba(100,100,100,0.4);
+    /* background-color: rgba(100,100,100,0.4); */
     position: relative;
     top: 20rem;
     margin-bottom: -25rem;
