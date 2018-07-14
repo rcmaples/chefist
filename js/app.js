@@ -149,7 +149,7 @@ function onFormSubmit(){
         }
         ingredientString = ingredientString.slice(0,ingredientString.length-1); // remove the trailing comma
         // console.log(ingredientString); // return!
-        let INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${ingredientString}&limitLicense=true&number=2&ranking=1`;
+        let INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${ingredientString}&limitLicense=true&number=12&ranking=1`;
         callApi(SPOON_BASE_URL, INGREDIENT_SEARCH_STRING, makeSummaryCard); // global ingredient_search_string is defined above and uses global search_query
         $('#js-search-form').toggleClass('clip');
     })
