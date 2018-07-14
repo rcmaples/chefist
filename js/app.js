@@ -147,8 +147,9 @@ function onFormSubmit(){
         }
         ingredientString = ingredientString.slice(0,ingredientString.length-1); // remove the trailing comma
         // console.log(ingredientString); // return!
-        let INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${ingredientString}&limitLicense=true&number=2&ranking=1`;
+        let INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${ingredientString}&limitLicense=true&number=25&ranking=1`;
         callApi(SPOON_BASE_URL, INGREDIENT_SEARCH_STRING, makeSummaryCard); // global ingredient_search_string is defined above and uses global search_query
+        $('#js-search-form').toggleClass('clip');
     })
 
 }
@@ -189,7 +190,7 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 
 function makeSummaryCard(data){
     let arrState = 0;
-    for (let i=0; i<2; i++) { //TODO: Set back to i<data.length)
+    for (let i=0; i<data.length; i++) {
         // populate ID, Title, and Image
         summaryCardsArr.push({
             "id": data[i].id,
@@ -202,7 +203,7 @@ function makeSummaryCard(data){
             type: 'GET',
             dataType: 'json',
             success: function (response) {
-                summaryCardsArr[i]["summary"] = `${response.summary.slice(0,608)}`; // TODO: remove slice;
+                summaryCardsArr[i]["summary"] = getRidOfSimilar(response.summary);
                 $.ajax({
                     url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
                     type: 'GET',
@@ -230,14 +231,14 @@ function makeSummaryCard(data){
 function displaySummaryResults(arr){
     for (let i=0; i<arr.length; i++){
         $(".js-summary-card").append(`
-            <li class="summary-card" id="${arr[i].id}">
+            <button class="summary-card" id="${arr[i].id}">
                 <img src="https://spoonacular.com/recipeImages/${arr[i].id}-556x370.jpg" alt="${arr[i].title}">
                 <div class="summary-card-content">
                     <h3>${arr[i].title}</h3>
                     <ul class="summary-card-specs">
                         <li>
                             <img class="specs" alt="Cook Time" src="${cookTimeImg}">
-                            <p>${arr[i].cookTime}</p>
+                            <p>${arr[i].cookTime} minutes</p>
                         </li>
                         <li>
                             <img class="specs" alt="Number of Calories" src="${calorieImg}">
@@ -246,34 +247,40 @@ function displaySummaryResults(arr){
                     </ul>
                     ${arr[i].summary}
                 </div>
-            </li>
+            </button>
         `);
     }
+    $('.js-summary-card').toggleClass('clip');
+    watchSummary();
 }
 
 
 
 /* Toss "Similar recipes ..." from the end of summary
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-// function getRidOfSimilar (myStr) {
-//     //let myStr = myStr;
-//     //console.log(myStr);
-//     let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
-//     newStr += "</p>";
-//     //console.log(newStr);
-//     return(newStr);
-// }
+function getRidOfSimilar (myStr) {
+    let regx = new RegExp(/\.(\s\w+)+[!,.;:']?(\s\w+)+:?\s\<a/, 'g');
+    let match = regx.exec(myStr);
+    if (match) {
+        let newStr = myStr.substring(0,(match.index+1));
+        newStr = `<p>${newStr.trim()}</p>`;
+        return(newStr);
+    } else { return myStr;}
+
+}
+
+
 
 /* Summary Card Event Watcher
 -------------------------------------------------- */
 
 function watchSummary(){
-    $("li").click(function(event){
+    $('.js-summary-card').on('click', 'button', function(event){
         event.PreventDefault;
         event.stopPropagation;
-        alert("HI");
+        makeRecipeCard(this.id);
         // makeRecipeCard(event.id)
-    });
+    }).toggleClass('clip');
 }
 
 /* End Summary Cards
@@ -368,7 +375,13 @@ function makeRecipeCard(idNum){
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
-    watchSummary();
+    $('.loader').hide();
+    $(document).ajaxStart(function(){
+        $('.loader').show();
+    });
+    $(document).ajaxStop(function(){
+        $('.loader').hide();
+    });
     $('.js-summary-card').empty(); // make sure there aren't any results before search!
     increaseFormFields(3); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
     onFormSubmit();
