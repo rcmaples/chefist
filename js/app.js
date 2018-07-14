@@ -135,8 +135,10 @@ function apiError(jqXHR, textStatus, errorThrown) {
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function onFormSubmit(){
     $('#js-search-form').submit(function(event){
-        event.stopPropagation();
         event.preventDefault();
+        event.stopPropagation();
+
+        $('.instructions').toggleClass('clip');
         let jsIngredients = $(this).serializeArray(); // Array of values
         let ingredientString = ""; // empty string
 
@@ -149,8 +151,8 @@ function onFormSubmit(){
         // console.log(ingredientString); // return!
         let INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${ingredientString}&limitLicense=true&number=2&ranking=1`;
         callApi(SPOON_BASE_URL, INGREDIENT_SEARCH_STRING, makeSummaryCard); // global ingredient_search_string is defined above and uses global search_query
+        $('#js-search-form').toggleClass('clip');
     })
-
 }
 
 /* Dynamically add form fields as needed max 10.
@@ -162,7 +164,7 @@ function increaseFormFields (i){
         $('#js-search-form input:text:last').prev().on('change',
             function(){
                 $('#js-search-form input:text:last').after(
-                    `<input type="text" placeholder="Chicken Breast" id="ingredient-${j}" name="ingredient-${j}" >`
+                    `<input type="text" placeholder="Chicken Breast" id="ingredient-${j}" name="ingredient-${j}">`
                 );
                 j++;
                 increaseFormFields(j);
@@ -188,8 +190,9 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 */
 
 function makeSummaryCard(data){
-    let arrState = 0;
-    for (let i=0; i<2; i++) { //TODO: Set back to i<data.length)
+    let arrLength = 0;
+
+    for (let i=0; i<data.length; i++) {
         // populate ID, Title, and Image
         summaryCardsArr.push({
             "id": data[i].id,
@@ -202,16 +205,16 @@ function makeSummaryCard(data){
             type: 'GET',
             dataType: 'json',
             success: function (response) {
-                summaryCardsArr[i]["summary"] = `${response.summary.slice(0,608)}`; // TODO: remove slice;
+                summaryCardsArr[i]["summary"] = getRidOfSimilar(response.summary);
                 $.ajax({
                     url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
                     type: 'GET',
                     dataType: 'json',
                     success: function (response) {
-                        arrState++;
+                        arrLength++;
                         summaryCardsArr[i]["calories"] = Math.round(response.nutrition.nutrients["0"].amount);
                         summaryCardsArr[i]["cookTime"] = response.readyInMinutes;
-                        if (arrState == data.length){
+                        if (arrLength == data.length){
                             displaySummaryResults(summaryCardsArr); // Pass the Array off to let jQuery build the html for them.};
                             }
                         },
@@ -228,16 +231,17 @@ function makeSummaryCard(data){
 /* Summary Cards Results Rendered as LIs.
 -------------------------------------------------- */
 function displaySummaryResults(arr){
+    $('.js-summary-card').toggleClass('clip');
     for (let i=0; i<arr.length; i++){
         $(".js-summary-card").append(`
-            <li class="summary-card" id="${arr[i].id}">
+            <button class="summary-card" id="${arr[i].id}">
                 <img src="https://spoonacular.com/recipeImages/${arr[i].id}-556x370.jpg" alt="${arr[i].title}">
                 <div class="summary-card-content">
                     <h3>${arr[i].title}</h3>
                     <ul class="summary-card-specs">
                         <li>
                             <img class="specs" alt="Cook Time" src="${cookTimeImg}">
-                            <p>${arr[i].cookTime}</p>
+                            <p>${arr[i].cookTime} minutes</p>
                         </li>
                         <li>
                             <img class="specs" alt="Number of Calories" src="${calorieImg}">
@@ -246,33 +250,38 @@ function displaySummaryResults(arr){
                     </ul>
                     ${arr[i].summary}
                 </div>
-            </li>
+            </button>
         `);
     }
+    watchSummary();
 }
 
 
 
 /* Toss "Similar recipes ..." from the end of summary
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-// function getRidOfSimilar (myStr) {
-//     //let myStr = myStr;
-//     //console.log(myStr);
-//     let newStr = myStr.substring(0, (myStr.indexOf("Similar")-1));
-//     newStr += "</p>";
-//     //console.log(newStr);
-//     return(newStr);
-// }
+function getRidOfSimilar (myStr) {
+    let regx = new RegExp(/\.(\s\w+)+[!,.;:']?(\s\w+)+:?\s\<a/, 'g');
+    let match = regx.exec(myStr);
+    if (match) {
+        let newStr = myStr.substring(0,(match.index+1));
+        newStr = `<p>${newStr.trim()}</p>`;
+        return(newStr);
+    } else { return myStr;}
+
+}
+
+
 
 /* Summary Card Event Watcher
 -------------------------------------------------- */
 
 function watchSummary(){
-    $("li").click(function(event){
-        event.PreventDefault;
-        event.stopPropagation;
-        alert("HI");
-        // makeRecipeCard(event.id)
+    $('.js-summary-card').on('click', 'button', function(event){
+        event.stopPropagation();
+        event.preventDefault();
+        makeRecipeCard(this.id);
+        $('.js-summary-card').toggleClass('clip');
     });
 }
 
@@ -283,6 +292,7 @@ function watchSummary(){
 -------------------------------------------------- */
 
 function makeRecipeCard(idNum){
+    console.log(`making recipe card for: ${idNum}`);
     //call ajax might be able to use callApi here.
     $.ajax({
         url: `${SPOON_BASE_URL}${idNum}/information?includeNutrition=true`,
@@ -296,8 +306,7 @@ function makeRecipeCard(idNum){
                     <h3>${data.title}</h3>
                     <table class="js-ingredients-table">
                         <caption>Ingredients:</caption>
-                        <tbody class="js-ingredients-list">
-            `);
+                        <tbody class="js-ingredients-list">`);
 
                 //loop through ingredients array
                 for (let i=0; i<data.extendedIngredients.length; i++){
@@ -368,7 +377,13 @@ function makeRecipeCard(idNum){
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
-    watchSummary();
+    $('.loader').hide();
+    $(document).ajaxStart(function(){
+        $('.loader').show();
+    });
+    $(document).ajaxStop(function(){
+        $('.loader').hide();
+    });
     $('.js-summary-card').empty(); // make sure there aren't any results before search!
     increaseFormFields(3); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
     onFormSubmit();
