@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="19px" viewBox="0 0 19 19" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51 (57462) - http://www.bohemiancoding.com/sketch -->
+    <title>Combined Shape</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="bevel">
+        <g id="Close-Modal" transform="translate(-18.000000, -18.000000)" fill="#246EB9" stroke="#246EB9">
+            <g id="Combined-Shape">
+                <path d="M28.5267857,26.3482143 L37.7857143,26.3482143 L38.875,26.3482143 L38.875,28.5267857 L37.7857143,28.5267857 L28.5267857,28.5267857 L28.5267857,37.7857143 L28.5267857,38.875 L26.3482143,38.875 L26.3482143,37.7857143 L26.3482143,28.5267857 L17.0892857,28.5267857 L16,28.5267857 L16,26.3482143 L17.0892857,26.3482143 L26.3482143,26.3482143 L26.3482143,17.0892857 L26.3482143,16 L28.5267857,16 L28.5267857,17.0892857 L28.5267857,26.3482143 Z" transform="translate(27.437500, 27.437500) rotate(-45.000000) translate(-27.437500, -27.437500) "></path>
+            </g>
+        </g>
+    </g>
+</svg>
