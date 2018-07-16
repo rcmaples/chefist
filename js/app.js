@@ -87,6 +87,7 @@ const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
  * setHeader before the api request for auth etc
  –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function.
+    console.log(`the API was called with ${query}`);
     return $.ajax({
         url: `${baseUrl}${query}`,
         type: 'GET',
@@ -138,11 +139,11 @@ function onFormSubmit(){
         event.preventDefault();
         event.stopPropagation();
 
-        $('.instructions').toggleClass('clip');
+        $('.instructions').addClass('clip');
         let jsIngredients = $(this).serializeArray(); // Array of values
         let ingredientString = ""; // empty string
 
-        for (let k = 0; k<jsIngredients.length; k++) {
+        for (let k = 0; k<jsIngredients.length; k++) { // This for loop could probably be done with a map reduce...
             if (jsIngredients[k].value) { // if non-empty
             ingredientString +=  `${jsIngredients[k].value},`; // concat on to the string, adds a comma after each word, also adds a trailing comma at the end.
             }
@@ -151,7 +152,7 @@ function onFormSubmit(){
         // console.log(ingredientString); // return!
         let INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${ingredientString}&limitLicense=true&number=12&ranking=1`;
         callApi(SPOON_BASE_URL, INGREDIENT_SEARCH_STRING, makeSummaryCard); // global ingredient_search_string is defined above and uses global search_query
-        $('#js-search-form').toggleClass('clip');
+        $('#js-search-form').addClass('clip');
     })
 }
 
@@ -231,7 +232,8 @@ function makeSummaryCard(data){
 /* Summary Cards Results Rendered as LIs.
 -------------------------------------------------- */
 function displaySummaryResults(arr){
-    $('.js-summary-card').toggleClass('clip');
+    $('.js-summary-card').removeClass('clip');
+    $('#js-restart-button').removeClass('clip');
     for (let i=0; i<arr.length; i++){
         $(".js-summary-card").append(`
             <button class="summary-card" id="${arr[i].id}">
@@ -261,7 +263,8 @@ function displaySummaryResults(arr){
 /* Toss "Similar recipes ..." from the end of summary
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function getRidOfSimilar (myStr) {
-    let regx = new RegExp(/\.(\s\w+)+[!,.;:']?(\s\w+)+:?\s\<a/, 'g');
+    let regx = new RegExp(/\.(\s\w+)?((\s\w+)+[!,.;:']?(\s\w+)+?:?)?\s\<a/, 'g');
+    // let regx = new RegExp(/\.(\s\w+)+[!,.;:']?(\s\w+)+:?\s\<a/, 'g');
     let match = regx.exec(myStr);
     if (match) {
         let newStr = myStr.substring(0,(match.index+1));
@@ -277,11 +280,26 @@ function getRidOfSimilar (myStr) {
 -------------------------------------------------- */
 
 function watchSummary(){
+    $('#js-restart-button').on('click', function(){
+        $('#js-search-form').find("input[type=text], textarea").val("");
+        $('.js-recipe-card').empty();
+        $('.js-summary-card').empty().addClass('clip');
+        $('#js-search-form').removeClass('clip');
+        $('#js-restart-button').addClass('clip');
+        let listSize = $('#js-search-form input[type="text"]').length;
+        while (listSize > 2) {
+            $('#js-search-form input[type="text"]:last').remove();
+            listSize--;
+        }
+        increaseFormFields(3);
+        onFormSubmit();
+    });
     $('.js-summary-card').on('click', 'button', function(event){
         event.stopPropagation();
         event.preventDefault();
         makeRecipeCard(this.id);
-        $('.js-summary-card').toggleClass('clip');
+        $('.js-summary-card').addClass('clip');
+        $('#js-restart-button').addClass('clip');
     });
 }
 
@@ -292,6 +310,7 @@ function watchSummary(){
 -------------------------------------------------- */
 
 function makeRecipeCard(idNum){
+    $('.js-recipe-card').empty();
     console.log(`making recipe card for: ${idNum}`);
     //call ajax might be able to use callApi here.
     $.ajax({
@@ -300,7 +319,7 @@ function makeRecipeCard(idNum){
         dataType: 'json',
         success: data => {
             // begin filling in recipe card
-            $('.js-recipe-card').toggleClass('clip')
+            $('.js-recipe-card').removeClass('clip')
                 .append(`<img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
                 <div class="recipe-card-content">
                     <h3>${data.title}</h3>
@@ -346,6 +365,9 @@ function makeRecipeCard(idNum){
                         case 'liter':
                             abbrvUnit = 'L';
                             break;
+                        case 'package':
+                            abbrvUnit = 'Pkg'
+                            break;
                         default:
                             abbrvUnit = data.extendedIngredients[i].unit;
                     }
@@ -364,14 +386,32 @@ function makeRecipeCard(idNum){
                 //render the instructions
                 $('table')
                     .after(`<p class="js-instructions">Instructions:</p>
-                            ${data.instructions}
+                            <p>${data.instructions}</p>
+                            <span class="js-fabs">
+                            <a href="#0" id="js-prev-button" class="fab fab-action-button fab-action-button__prev" title="Back to Results">Back to Results</a>
+                            <a href="#0" id="js-wine-button" class="fab fab-action-button fab-action-button__wine" title="Wine Reccomendations">Wine Reccomendations</a>
+                            </span>
                             <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
-                        </div>`);
+                        </div>`); // <a href="#0" id="js-share-button" class="fab fab-action-button fab-action-button__share" title="Share this Recipe">Share this Recipe</a>
+            recipeCardListener();
         },
         error: apiError,
         beforeSend: setHeader
     });
 }
+
+function recipeCardListener(){
+    $('#js-prev-button').on('click', function(){
+        $('.js-recipe-card').addClass('clip');
+        $('.js-summary-card').removeClass('clip');
+        $('#js-restart-button').removeClass('clip');
+    });
+
+    $('#js-wine-button').on('click', function(){
+        alert("Aw, we're sorry that button doesn't work yet.");
+    });
+}
+
 
 
 /* Jinkies! - just checking that the script runs.
