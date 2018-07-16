@@ -393,14 +393,15 @@ function makeRecipeCard(idNum){
                             </span>
                             <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
                         </div>`); // <a href="#0" id="js-share-button" class="fab fab-action-button fab-action-button__share" title="Share this Recipe">Share this Recipe</a>
-            recipeCardListener();
+            recipeCardListener(data);
         },
         error: apiError,
         beforeSend: setHeader
     });
 }
 
-function recipeCardListener(){
+function recipeCardListener(data){
+    console.log(data);
     $('#js-prev-button').on('click', function(){
         $('.js-recipe-card').addClass('clip');
         $('.js-summary-card').removeClass('clip');
@@ -408,7 +409,15 @@ function recipeCardListener(){
     });
 
     $('#js-wine-button').on('click', function(){
-        alert("Aw, we're sorry that button doesn't work yet.");
+        if (data.winePairing.pairingText == ""){
+            $('.js-wine-modal')
+            .html(`<p>No wines suggested.</p><a href="#close-modal" tabIndex="0" rel="modal:close">Close</a>`)
+            .modal({escapeClose: false, clickClose: false});
+        } else {
+        $('.js-wine-modal')
+            .html(`<p>${data.winePairing.pairingText}</p><a href="#close-modal" tabIndex="0" rel="modal:close">Close</a>`)
+            .modal({escapeClose: false, clickClose: false});
+        }
     });
 }
 
