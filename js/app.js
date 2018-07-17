@@ -87,7 +87,7 @@ const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
  * setHeader before the api request for auth etc
  –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function callApi(baseUrl, query, callback) { // Generalized for portability. On Success run callback function.
-    console.log(`the API was called with ${query}`);
+    // console.log(`the API was called with ${query}`);
     return $.ajax({
         url: `${baseUrl}${query}`,
         type: 'GET',
@@ -108,19 +108,19 @@ function setHeader(xhr) {
 // Basic Error Handling
 function apiError(jqXHR, textStatus, errorThrown) {
     //alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
-    console.log(`/--------------------`);
-    console.log('jqXHR:');
-    console.log(jqXHR);
-    console.log('textStatus:');
-    console.log(textStatus);
-    console.log('errorThrown:');
-    console.log(errorThrown);
-    console.log(`/--------------------`);
+    // console.log(`/--------------------`);
+    // console.log('jqXHR:');
+    // console.log(jqXHR);
+    // console.log('textStatus:');
+    // console.log(textStatus);
+    // console.log('errorThrown:');
+    // console.log(errorThrown);
+    // console.log(`/--------------------`);
 }
 
 // test function to be passed as callback verify correct response
 // function apiTest(data){
-//     console.log(data);
+//  console.log(data)
 // }
 /* End API Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -135,6 +135,9 @@ function apiError(jqXHR, textStatus, errorThrown) {
  * return the string for API call.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function onFormSubmit(){
+    // console.log('onFormSubmit ran...');
+    summaryCardsArr.length = 0;
+    $('.js-summary-card').empty();
     $('#js-search-form').submit(function(event){
         event.preventDefault();
         event.stopPropagation();
@@ -151,6 +154,8 @@ function onFormSubmit(){
         ingredientString = ingredientString.slice(0,ingredientString.length-1); // remove the trailing comma
         // console.log(ingredientString); // return!
         let INGREDIENT_SEARCH_STRING = `findByIngredients?fillIngredients=false&ingredients=${ingredientString}&limitLicense=true&number=12&ranking=1`;
+        // console.log('onFormSubmit is calling the api...with a makeSummaryCard Callback');
+
         callApi(SPOON_BASE_URL, INGREDIENT_SEARCH_STRING, makeSummaryCard); // global ingredient_search_string is defined above and uses global search_query
         $('#js-search-form').addClass('clip');
     })
@@ -158,21 +163,27 @@ function onFormSubmit(){
 
 /* Dynamically add form fields as needed max 10.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
-function increaseFormFields (i){
-    if (i<=10) { // limit to 10 items or less. i is 1-indexed here.
-        // console.log(`Increasing Fields`);
-        let j = i;
-        $('#js-search-form input:text:last').prev().on('change',
-            function(){
-                $('#js-search-form input:text:last').after(
-                    `<input type="text" placeholder="Chicken Breast" id="ingredient-${j}" name="ingredient-${j}">`
-                );
-                j++;
-                increaseFormFields(j);
-            }
-        );
-    }
+
+function increaseFormFields() {
+    // console.log('increaseFormFields is running...');
+    $('#js-search-form input[type=text]').filter(":last").prev().on('change', function(event){
+        event.stopPropagation();
+        event.preventDefault();
+        let numFields = Number($('input[type=text]').filter(":last").attr('id').slice(11,));
+        let j = numFields+1;
+        if (numFields<10) {
+            $('input[type=text]').last().after(
+                `<input type="text" placeholder="Chicken Breast" id="ingredient-${j}" name="ingredient-${j}">`
+            );
+            // console.log('increaseFormFields is calling increaseFormFields...');
+            increaseFormFields();
+        } else {
+            alert("Max 10 items!")
+        }
+    })
+
 }
+
 
 /* End Form Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
@@ -191,6 +202,7 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 */
 
 function makeSummaryCard(data){
+    // console.log(`makeSummaryCard is running...`);
     let arrLength = 0;
 
     for (let i=0; i<data.length; i++) {
@@ -201,21 +213,26 @@ function makeSummaryCard(data){
             "image": `https://spoonacular.com/recipeImages/${data[i].id}-556x370.jpg`,
         });
         // populate Summary
+        // console.log(`makeSummaryCard is making the 1st api call for the ${i}-th time.`);
         $.ajax({
             url: `${SPOON_BASE_URL}${data[i].id}/summary`,
             type: 'GET',
             dataType: 'json',
             success: function (response) {
+                // console.log(`makeSummaryCard was successful making the 1st api call for the ${i}-th time.`);
                 summaryCardsArr[i]["summary"] = getRidOfSimilar(response.summary);
+                // console.log(`makeSummaryCard is making the 2nd api call for the ${i}-th time.`);
                 $.ajax({
                     url: `${SPOON_BASE_URL}${data[i].id}/information?includeNutrition=true`,
                     type: 'GET',
                     dataType: 'json',
                     success: function (response) {
+                        // console.log(`makeSummaryCard was successful making the 2nd api call for the ${i}-th time.`);
                         arrLength++;
                         summaryCardsArr[i]["calories"] = Math.round(response.nutrition.nutrients["0"].amount);
                         summaryCardsArr[i]["cookTime"] = response.readyInMinutes;
                         if (arrLength == data.length){
+                            // console.log('makeSummaryCard is calling displaySummaryResults now...');
                             displaySummaryResults(summaryCardsArr); // Pass the Array off to let jQuery build the html for them.};
                             }
                         },
@@ -229,9 +246,10 @@ function makeSummaryCard(data){
     }
 }
 
-/* Summary Cards Results Rendered as LIs.
+/* Summary Cards Results Rendered as buttons in a form.
 -------------------------------------------------- */
 function displaySummaryResults(arr){
+    // console.log(`displaySummaryResults ran...`);
     $('.js-summary-card').removeClass('clip');
     $('#js-restart-button').removeClass('clip');
     for (let i=0; i<arr.length; i++){
@@ -255,7 +273,10 @@ function displaySummaryResults(arr){
             </button>
         `);
     }
+    $(".js-summary-card").append(`</div>`);
+    // console.log(`displaySummaryResults called watchSummary...`);
     watchSummary();
+
 }
 
 
@@ -280,10 +301,13 @@ function getRidOfSimilar (myStr) {
 -------------------------------------------------- */
 
 function watchSummary(){
+    // console.log(`watchSummary ran..`);
     $('#js-restart-button').on('click', function(){
         $('#js-search-form').find("input[type=text], textarea").val("");
         $('.js-recipe-card').empty();
-        $('.js-summary-card').empty().addClass('clip');
+        $('.js-summary-card').empty();
+        summaryCardsArr.length = 0;
+        $('.js-summary-card').addClass('clip');
         $('#js-search-form').removeClass('clip');
         $('#js-restart-button').addClass('clip');
         let listSize = $('#js-search-form input[type="text"]').length;
@@ -291,12 +315,14 @@ function watchSummary(){
             $('#js-search-form input[type="text"]:last').remove();
             listSize--;
         }
-        increaseFormFields(3);
-        onFormSubmit();
+        // console.log(`watchSummary called onFormSubmit`);
+        //onFormSubmit();
+
     });
     $('.js-summary-card').on('click', 'button', function(event){
         event.stopPropagation();
         event.preventDefault();
+        // console.log(`watchSummary called makeRecipeCard...`)
         makeRecipeCard(this.id);
         $('.js-summary-card').addClass('clip');
         $('#js-restart-button').addClass('clip');
@@ -310,14 +336,16 @@ function watchSummary(){
 -------------------------------------------------- */
 
 function makeRecipeCard(idNum){
+    // console.log(`makeRecipeCard ran...`);
     $('.js-recipe-card').empty();
-    console.log(`making recipe card for: ${idNum}`);
+    // console.log(`making api call to make recipe card for: ${idNum}`);
     //call ajax might be able to use callApi here.
     $.ajax({
         url: `${SPOON_BASE_URL}${idNum}/information?includeNutrition=true`,
         type: 'GET',
         dataType: 'json',
         success: data => {
+            // console.log(`recipe card api call was successful...`);
             // begin filling in recipe card
             $('.js-recipe-card').removeClass('clip')
                 .append(`<img src="https://spoonacular.com/recipeImages/${data.id}-556x370.jpg" alt="${data.title}">
@@ -393,6 +421,7 @@ function makeRecipeCard(idNum){
                             </span>
                             <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
                         </div>`); // <a href="#0" id="js-share-button" class="fab fab-action-button fab-action-button__share" title="Share this Recipe">Share this Recipe</a>
+            // console.log(`makeRecipCard is calling recipeCardListener...`);
             recipeCardListener(data);
         },
         error: apiError,
@@ -401,11 +430,13 @@ function makeRecipeCard(idNum){
 }
 
 function recipeCardListener(data){
+    // console.log(`recipeCardListener is running...`)
     console.log(data);
     $('#js-prev-button').on('click', function(){
         $('.js-recipe-card').addClass('clip');
         $('.js-summary-card').removeClass('clip');
         $('#js-restart-button').removeClass('clip');
+        $('.js-recipe-card').empty();
     });
 
     $('#js-wine-button').on('click', function(){
@@ -426,6 +457,7 @@ function recipeCardListener(data){
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
+    // console.log(`Jinkies!`)
     $('.loader').hide();
     $(document).ajaxStart(function(){
         $('.loader').show();
@@ -434,9 +466,14 @@ function jinkies(){
         $('.loader').hide();
     });
     $('.js-summary-card').empty(); // make sure there aren't any results before search!
-    increaseFormFields(3); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
+
+    // console.log('Jinkies called increaseFormFields...');
+    increaseFormFields(); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
+    // console.log('Jinkies called onFormSubmit...');
     onFormSubmit();
-    console.log('Jinkies!');
+
+
+
 };
 $(jinkies);
 

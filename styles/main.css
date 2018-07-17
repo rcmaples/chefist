@@ -262,7 +262,7 @@ input[type="submit"] {
     background-color: #FFDA5B;
     position: fixed;
     bottom: 1.5%;
-    right: 25%;
+    right: 13.5%;
 }
 
 .fab-action-button__share {
@@ -306,9 +306,16 @@ input[type="submit"] {
     background: white;
 }
 
+.js-summary-card {
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+    width: 90%;
+}
 
 .summary-card {
-    float: left;
+    display:inline;
+    width: 45%;
 }
 /* .summary-card-specs {
 
