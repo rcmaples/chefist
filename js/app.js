@@ -351,6 +351,7 @@ function makeRecipeCard(idNum){
         type: 'GET',
         dataType: 'json',
         success: data => {
+            $('.js-recipe-card').empty();
             // console.log(`recipe card api call was successful...`);
             // begin filling in recipe card
             $('.js-recipe-card').removeClass('clip')
