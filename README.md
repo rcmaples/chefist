@@ -1,9 +1,6 @@
 # The Chefist
-## Your food. Gour-made(c)
 
 Recipes as a Service
-
-![Build Status](https://travis-ci.org/rcmaples/chefist.svg?branch=gh-pages)
 
 ## Screenshots
 Login Screen/Landing Page:
@@ -12,15 +9,11 @@ Login Screen/Landing Page:
 
 About:
 
-![Search Results](screenshots/02_SearchResults.png)
+![Search Results](screens/02_SearchResults.png)
 
 Library:
 
-![library](screenshots/03_Recipe.png)
-
-
-
-```
+![library](screens/03_Recipe.png)
 
 ## Built With
 
@@ -30,12 +23,12 @@ Library:
 * Normalize
 * Modernizr.js
 
-## Features
+#### Features
 
 * Input a list of Ingredients
 * Get a list of Recipe's you can make
 * See wine recommendations for recipe of your choice
 
-## Demo
+### Demo
 
 - [Live Demo](https://rcmaples.io/chefist)
