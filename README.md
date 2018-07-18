@@ -38,4 +38,4 @@ Library:
 
 ## Demo
 
-- [Live Demo](https://book-thing.herokuapp.com/)
+- [Live Demo](https://rcmaples.io/chefist)
