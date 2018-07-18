@@ -367,6 +367,18 @@ function makeRecipeCard(idNum){
                     // abbreviate the units of measurement
                     let abbrvUnit;
                     switch (data.extendedIngredients[i].unit){
+                        case 'ounces':
+                            abbrvUnit = 'oz';
+                            break;
+                        case 'cups':
+                            abbrvUnit = 'C';
+                            break;
+                        case 'pound':
+                            abbrvUnit = 'lb';
+                            break;
+                        case 'pounds':
+                            abbrvUnit = 'lbs';
+                            break;
                         case 'teaspoon':
                             abbrvUnit = 'tsp';
                             break;
@@ -383,7 +395,7 @@ function makeRecipeCard(idNum){
                             abbrvUnit = 'oz';
                             break;
                         case 'cup':
-                            abbrvUnit = 'c';
+                            abbrvUnit = 'C';
                             break;
                         case 'pint':
                             abbrvUnit = 'pt';
