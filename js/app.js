@@ -325,10 +325,10 @@ function watchSummary(){
 
     });
     $('.js-summary-card').on('click', 'button', function(event){
-        console.log(`Summary watcher saw the ${this.id} button get clicked.`);
+        // console.log(`Summary watcher saw the ${this.id} button get clicked.`);
         event.stopPropagation();
         event.preventDefault();
-        console.log(`watchSummary called makeRecipeCard...`)
+        // console.log(`watchSummary called makeRecipeCard...`)
         makeRecipeCard(this.id);
         $('.js-summary-card').addClass('clip');
         $('#js-restart-button').addClass('clip');
@@ -342,7 +342,7 @@ function watchSummary(){
 -------------------------------------------------- */
 
 function makeRecipeCard(idNum){
-    console.log(`makeRecipeCard ran...`);
+    // console.log(`makeRecipeCard ran...`);
     $('.js-recipe-card').empty();
     // console.log(`making api call to make recipe card for: ${idNum}`);
     //call ajax might be able to use callApi here.
@@ -444,7 +444,7 @@ function makeRecipeCard(idNum){
 
 function recipeCardListener(data){
     // console.log(`recipeCardListener is running...`)
-    console.log(data);
+    //console.log(data);
     $('#js-prev-button').on('click', function(event){
         event.stopPropagation();
         event.preventDefault();
