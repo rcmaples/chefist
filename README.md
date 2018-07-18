@@ -1,19 +1,19 @@
 # The Chefist
 
-Recipes as a Service
+- [View it Live](https://rcmaples.io/chefist)
 
 ## Screenshots
 Login Screen/Landing Page:
 
 ![Initial Screen and Search](screens/01_Landing-Search.png)
 
-About:
+Search Results:
 
 ![Search Results](screens/02_SearchResults.png)
 
-Library:
+Recipe Card:
 
-![library](screens/03_Recipe.png)
+![Recipe Card](screens/03_Recipe.png)
 
 ## Built With
 
@@ -28,7 +28,3 @@ Library:
 * Input a list of Ingredients
 * Get a list of Recipe's you can make
 * See wine recommendations for recipe of your choice
-
-### Demo
-
-- [Live Demo](https://rcmaples.io/chefist)
