@@ -137,7 +137,8 @@ function apiError(jqXHR, textStatus, errorThrown) {
 function onFormSubmit(){
     // console.log('onFormSubmit ran...');
     summaryCardsArr.length = 0;
-    $('.js-summary-card').empty();
+    $('.js-summary').empty();
+    $('.js-summary').append(`<legend class="clip">Search Results</legend>`);
     $('#js-search-form').submit(function(event){
         event.preventDefault();
         event.stopPropagation();
@@ -253,7 +254,7 @@ function displaySummaryResults(arr){
     $('.js-summary-card').removeClass('clip');
     $('#js-restart-button').removeClass('clip');
     for (let i=0; i<arr.length; i++){
-        $(".js-summary-card").append(`
+        $(".js-summary").append(`
             <button class="summary-card" id="${arr[i].id}">
                 <img src="https://spoonacular.com/recipeImages/${arr[i].id}-556x370.jpg" alt="${arr[i].title}">
                 <div class="summary-card-content">
@@ -301,11 +302,15 @@ function getRidOfSimilar (myStr) {
 -------------------------------------------------- */
 
 function watchSummary(){
+    $('.js-recipe-card').empty();
     // console.log(`watchSummary ran..`);
-    $('#js-restart-button').on('click', function(){
+    $('#js-restart-button').on('click', function(event){
+        event.stopPropagation();
+        event.preventDefault();
         $('#js-search-form').find("input[type=text], textarea").val("");
         $('.js-recipe-card').empty();
-        $('.js-summary-card').empty();
+        $('.js-summary').empty();
+        $('.js-summary').append(`<legend class="clip">Search Results</legend>`);
         summaryCardsArr.length = 0;
         $('.js-summary-card').addClass('clip');
         $('#js-search-form').removeClass('clip');
@@ -320,9 +325,10 @@ function watchSummary(){
 
     });
     $('.js-summary-card').on('click', 'button', function(event){
+        console.log(`Summary watcher saw the ${this.id} button get clicked.`);
         event.stopPropagation();
         event.preventDefault();
-        // console.log(`watchSummary called makeRecipeCard...`)
+        console.log(`watchSummary called makeRecipeCard...`)
         makeRecipeCard(this.id);
         $('.js-summary-card').addClass('clip');
         $('#js-restart-button').addClass('clip');
@@ -336,7 +342,7 @@ function watchSummary(){
 -------------------------------------------------- */
 
 function makeRecipeCard(idNum){
-    // console.log(`makeRecipeCard ran...`);
+    console.log(`makeRecipeCard ran...`);
     $('.js-recipe-card').empty();
     // console.log(`making api call to make recipe card for: ${idNum}`);
     //call ajax might be able to use callApi here.
@@ -345,6 +351,7 @@ function makeRecipeCard(idNum){
         type: 'GET',
         dataType: 'json',
         success: data => {
+            $('.js-recipe-card').empty();
             // console.log(`recipe card api call was successful...`);
             // begin filling in recipe card
             $('.js-recipe-card').removeClass('clip')
@@ -396,6 +403,12 @@ function makeRecipeCard(idNum){
                         case 'package':
                             abbrvUnit = 'Pkg'
                             break;
+                        case 'tablespoons':
+                            abbrvUnit = 'Tbsp'
+                            break;
+                        case 'servings':
+                            abbrvUnit = 'Srvg'
+                            break;
                         default:
                             abbrvUnit = data.extendedIngredients[i].unit;
                     }
@@ -432,15 +445,19 @@ function makeRecipeCard(idNum){
 function recipeCardListener(data){
     // console.log(`recipeCardListener is running...`)
     console.log(data);
-    $('#js-prev-button').on('click', function(){
+    $('#js-prev-button').on('click', function(event){
+        event.stopPropagation();
+        event.preventDefault();
         $('.js-recipe-card').addClass('clip');
         $('.js-summary-card').removeClass('clip');
         $('#js-restart-button').removeClass('clip');
         $('.js-recipe-card').empty();
     });
 
-    $('#js-wine-button').on('click', function(){
-        if (data.winePairing.pairingText == ""){
+    $('#js-wine-button').on('click', function(event){
+        event.stopPropagation();
+        event.preventDefault();
+        if (data.winePairing.pairingText == "" || data.winePairing.pairingText == undefined || data.winePairing.pairingText == null){
             $('.js-wine-modal')
             .html(`<p>No wines suggested.</p><a href="#close-modal" tabIndex="0" rel="modal:close">Close</a>`)
             .modal({escapeClose: false, clickClose: false});
@@ -457,7 +474,7 @@ function recipeCardListener(data){
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
-    // console.log(`Jinkies!`)
+    console.log(`Jinkies!`)
     $('.loader').hide();
     $(document).ajaxStart(function(){
         $('.loader').show();
@@ -465,7 +482,8 @@ function jinkies(){
     $(document).ajaxStop(function(){
         $('.loader').hide();
     });
-    $('.js-summary-card').empty(); // make sure there aren't any results before search!
+    $('.js-summary').empty();
+    $('.js-summary').append(`<legend class="clip">Search Results</legend>`);// make sure there aren't any results before search!
 
     // console.log('Jinkies called increaseFormFields...');
     increaseFormFields(); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.
