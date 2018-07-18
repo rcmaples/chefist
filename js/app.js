@@ -301,8 +301,11 @@ function getRidOfSimilar (myStr) {
 -------------------------------------------------- */
 
 function watchSummary(){
+    $('.js-recipe-card').empty();
     // console.log(`watchSummary ran..`);
-    $('#js-restart-button').on('click', function(){
+    $('#js-restart-button').on('click', function(event){
+        event.stopPropagation();
+        event.preventDefault();
         $('#js-search-form').find("input[type=text], textarea").val("");
         $('.js-recipe-card').empty();
         $('.js-summary-card').empty();
@@ -320,9 +323,10 @@ function watchSummary(){
 
     });
     $('.js-summary-card').on('click', 'button', function(event){
+        console.log(`Summary watcher saw the ${this.id} button get clicked.`);
         event.stopPropagation();
         event.preventDefault();
-        // console.log(`watchSummary called makeRecipeCard...`)
+        console.log(`watchSummary called makeRecipeCard...`)
         makeRecipeCard(this.id);
         $('.js-summary-card').addClass('clip');
         $('#js-restart-button').addClass('clip');
@@ -336,7 +340,7 @@ function watchSummary(){
 -------------------------------------------------- */
 
 function makeRecipeCard(idNum){
-    // console.log(`makeRecipeCard ran...`);
+    console.log(`makeRecipeCard ran...`);
     $('.js-recipe-card').empty();
     // console.log(`making api call to make recipe card for: ${idNum}`);
     //call ajax might be able to use callApi here.
@@ -432,15 +436,19 @@ function makeRecipeCard(idNum){
 function recipeCardListener(data){
     // console.log(`recipeCardListener is running...`)
     console.log(data);
-    $('#js-prev-button').on('click', function(){
+    $('#js-prev-button').on('click', function(event){
+        event.stopPropagation();
+        event.preventDefault();
         $('.js-recipe-card').addClass('clip');
         $('.js-summary-card').removeClass('clip');
         $('#js-restart-button').removeClass('clip');
         $('.js-recipe-card').empty();
     });
 
-    $('#js-wine-button').on('click', function(){
-        if (data.winePairing.pairingText == ""){
+    $('#js-wine-button').on('click', function(event){
+        event.stopPropagation();
+        event.preventDefault();
+        if (data.winePairing.pairingText == "" || data.winePairing.pairingText == undefined || data.winePairing.pairingText == null){
             $('.js-wine-modal')
             .html(`<p>No wines suggested.</p><a href="#close-modal" tabIndex="0" rel="modal:close">Close</a>`)
             .modal({escapeClose: false, clickClose: false});
