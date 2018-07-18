@@ -117,7 +117,7 @@ input[type="submit"] {
     background-color:white !important;
 }
 
-@media (min-width: 400px) {
+@media (min-width: 320px) {
     #js-search-form {
         position: relative;
         display: block;
@@ -404,7 +404,7 @@ input[type="submit"] {
     width: 45%;
 }
 
-@media (min-width: 400px) {
+@media (min-width: 320px) {
     .summary-card {
         display: inline-block;
         width: 95%;
@@ -523,7 +523,7 @@ table.js-ingredients-table {
     height: 0px;
   }
 /* Larger than mobile */
-@media (min-width: 400px) {
+@media (min-width: 320px) {
     .js-ingredient-image {
         width: 0%;
         visibility: hidden;
