@@ -137,7 +137,8 @@ function apiError(jqXHR, textStatus, errorThrown) {
 function onFormSubmit(){
     // console.log('onFormSubmit ran...');
     summaryCardsArr.length = 0;
-    $('.js-summary-card').empty();
+    $('.js-summary').empty();
+    $('.js-summary').append(`<legend class="clip">Search Results</legend>`);
     $('#js-search-form').submit(function(event){
         event.preventDefault();
         event.stopPropagation();
@@ -253,7 +254,7 @@ function displaySummaryResults(arr){
     $('.js-summary-card').removeClass('clip');
     $('#js-restart-button').removeClass('clip');
     for (let i=0; i<arr.length; i++){
-        $(".js-summary-card").append(`
+        $(".js-summary").append(`
             <button class="summary-card" id="${arr[i].id}">
                 <img src="https://spoonacular.com/recipeImages/${arr[i].id}-556x370.jpg" alt="${arr[i].title}">
                 <div class="summary-card-content">
@@ -308,7 +309,8 @@ function watchSummary(){
         event.preventDefault();
         $('#js-search-form').find("input[type=text], textarea").val("");
         $('.js-recipe-card').empty();
-        $('.js-summary-card').empty();
+        $('.js-summary').empty();
+        $('.js-summary').append(`<legend class="clip">Search Results</legend>`);
         summaryCardsArr.length = 0;
         $('.js-summary-card').addClass('clip');
         $('#js-search-form').removeClass('clip');
@@ -400,6 +402,12 @@ function makeRecipeCard(idNum){
                         case 'package':
                             abbrvUnit = 'Pkg'
                             break;
+                        case 'tablespoons':
+                            abbrvUnit = 'Tbsp'
+                            break;
+                        case 'servings':
+                            abbrvUnit = 'Srvg'
+                            break;
                         default:
                             abbrvUnit = data.extendedIngredients[i].unit;
                     }
@@ -465,7 +473,7 @@ function recipeCardListener(data){
 /* Jinkies! - just checking that the script runs.
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function jinkies(){
-    // console.log(`Jinkies!`)
+    console.log(`Jinkies!`)
     $('.loader').hide();
     $(document).ajaxStart(function(){
         $('.loader').show();
@@ -473,7 +481,8 @@ function jinkies(){
     $(document).ajaxStop(function(){
         $('.loader').hide();
     });
-    $('.js-summary-card').empty(); // make sure there aren't any results before search!
+    $('.js-summary').empty();
+    $('.js-summary').append(`<legend class="clip">Search Results</legend>`);// make sure there aren't any results before search!
 
     // console.log('Jinkies called increaseFormFields...');
     increaseFormFields(); // We start with 2 by default, so when the app starts, we pre-set 3 into the function.

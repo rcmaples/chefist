@@ -31,13 +31,13 @@ header {
 
 header p {
     text-align: center;
-    margin-top: 1.5rem;
-    margin-left:28rem;
+    margin-top: 1%;
+    margin-left:28%;
 }
 
 
 header img {
-    margin-top: .5rem;
+    margin-top: .7%;
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -144,8 +144,14 @@ input[type="submit"] {
         margin-right:auto;
     }
 
+    .summary-card {
+        width: calc(100%/2);
+    }
+
+    .js-recipe-card {
+        width: 100%;
+    }
     .summary-card, .js-recipe-card {
-        width:calc(100%/2);
         margin-left:auto;
         margin-right:auto;
         position: relative;
@@ -180,7 +186,7 @@ input[type="submit"] {
     }
 
     .js-recipe-card {
-        width: calc(100%/2);
+        width: calc(200%/3);
         margin-left:auto;
         margin-right:auto;
         position: relative;
@@ -189,6 +195,7 @@ input[type="submit"] {
     .summary-card {
     width:calc(100%/2.75);
     }
+
 
     input[type="submit"] {
         border: 1px solid #bbb;
@@ -215,6 +222,18 @@ input[type="submit"] {
 
     }
 }
+
+@media (min-width: 800px) {
+    .js-recipe-card {
+        width: calc(100%/2);
+        margin-left:auto;
+        margin-right:auto;
+        position: relative;
+        display: block;
+    }
+}
+
+
 
 @media (min-width: 1200px) {
     #js-search-form {
@@ -257,13 +276,80 @@ input[type="submit"] {
     right: 3%;
 }
 
+    .fab-action-button__restart {
+        background: url("../img/Shape.png") no-repeat center;
+        background-color: #FFDA5B;
+        position: fixed;
+        bottom: 4.5%;
+        right: 2.5%;
+        z-index:1;
+    }
+
+@media (min-width: 750px) {
+    .fab-action-button__restart {
+        background: url("../img/Shape.png") no-repeat center;
+        background-color: #FFDA5B;
+        position: fixed;
+        bottom: 4.5%;
+        right: 2.5%;
+        z-index:1;
+        }
+    }
+
+@media (min-width: 1200px) {
 .fab-action-button__restart {
     background: url("../img/Shape.png") no-repeat center;
     background-color: #FFDA5B;
     position: fixed;
-    bottom: 1.5%;
-    right: 13.5%;
+    bottom: 4.5%;
+    right: 11.5%;
+    z-index:1;
+    }
 }
+
+@media (min-width: 1250px) {
+    .fab-action-button__restart {
+        background: url("../img/Shape.png") no-repeat center;
+        background-color: #FFDA5B;
+        position: fixed;
+        bottom: 4.5%;
+        right: 16.5%;
+        z-index:1;
+        }
+    }
+
+@media (min-width: 1500px) {
+    .fab-action-button__restart {
+        background: url("../img/Shape.png") no-repeat center;
+        background-color: #FFDA5B;
+        position: fixed;
+        bottom: 4.5%;
+        right: 19.5%;
+        z-index:1;
+        }
+    }
+
+@media (min-width: 1650px) {
+    .fab-action-button__restart {
+        background: url("../img/Shape.png") no-repeat center;
+        background-color: #FFDA5B;
+        position: fixed;
+        bottom: 4.5%;
+        right: 22.5%;
+        z-index:1;
+        }
+}
+
+@media (min-width: 1800px) {
+    .fab-action-button__restart {
+        background: url("../img/Shape.png") no-repeat center;
+        background-color: #FFDA5B;
+        position: fixed;
+        bottom: 4.5%;
+        right: 25.5%;
+        z-index:1;
+        }
+    }
 
 .fab-action-button__share {
 
@@ -314,9 +400,24 @@ input[type="submit"] {
 }
 
 .summary-card {
-    display:inline;
+    display: inline-block;
     width: 45%;
 }
+
+@media (min-width: 400px) {
+    .summary-card {
+        display: inline-block;
+        width: 95%;
+    }
+}
+
+@media (min-width: 796px) {
+    .summary-card {
+        display: inline-block;
+        width: 46%;
+    }
+}
+
 /* .summary-card-specs {
 
 } */
