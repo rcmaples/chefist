@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <form id="js-search-form" action="#" method="GET">
+            <form id="js-search-form" aria-live="polite" action="#" method="GET">
                 <fieldset>
                     <legend class="clip">Enter your ingredients</legend>
                     <input type="text" placeholder="Chicken Breast" id="ingredient-1" name="ingredient-1" required>
@@ -65,17 +65,17 @@
         </div>
     </main>
 
-    <form class="js-summary-card clip" action="#" method="GET">
+    <form class="js-summary-card clip" aria-live="polite" action="#" method="GET">
             <fieldset class="js-summary">
 
             </fieldset>
     </form>
 
-    <div class="js-recipe-card clip"></div>
+    <section role="article" class="js-recipe-card clip" aria-live="assertive"></section>
 
     </div> <!-- end container -->
 
-    <div class="modal js-wine-modal" role="dialog">
+    <div class="modal js-wine-modal" aria-live="polite" role="dialog">
         <p>You want wine?</p>
         <a href="#close-modal" tabIndex="0" rel="modal:close" class="js-modal-close">Close</a>
       </div>

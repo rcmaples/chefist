@@ -5,6 +5,7 @@
 }
 
 .clip {
+    visibility: hidden;
     top: -9999px;
 	position: absolute !important;
 	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
@@ -43,11 +44,11 @@ header img {
     margin-right: auto;
 }
 
-.instructions p {
-    font-size: 3.5rem;
+.instructions p, .error p {
+    font-size: 2.5rem;
     font-weight: bold;
-    line-height: 4.1rem;
-    padding: 5px;
+    line-height: 3.1rem;
+    padding: 0px;
 }
 
 @media (min-width: 750px) {
@@ -57,6 +58,9 @@ header img {
 
 }
 
+.top {
+    top: 60rem !important;
+}
 
 input[type="text"] {
     height: 5.3rem !important;
@@ -117,11 +121,11 @@ input[type="submit"] {
     background-color:white !important;
 }
 
-@media (min-width: 400px) {
+@media (min-width: 320px) {
     #js-search-form {
         position: relative;
         display: block;
-        width:calc(100%/1.25);
+        width:100%;
         margin-left:auto;
         margin-right:auto;
     }
@@ -404,7 +408,7 @@ input[type="submit"] {
     width: 45%;
 }
 
-@media (min-width: 400px) {
+@media (min-width: 320px) {
     .summary-card {
         display: inline-block;
         width: 95%;
@@ -523,7 +527,7 @@ table.js-ingredients-table {
     height: 0px;
   }
 /* Larger than mobile */
-@media (min-width: 400px) {
+@media (min-width: 320px) {
     .js-ingredient-image {
         width: 0%;
         visibility: hidden;

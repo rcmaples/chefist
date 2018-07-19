@@ -48,13 +48,7 @@
  *
  * Once we have the summary of each recipe, we need
  * jQuery to create a summary card item and display
- * it. We'll be using Desandro's Masonry to display
- * the results.
- * https://masonry.desandro.com/ (MIT License)
- *
- * The results will have infinite scroll load using
- * Metafizzy's Infinite Scroll
- * https://infinite-scroll.com/ (GNU GPL 3)
+ * it.
  *
  * User should be able to return to search form from
  * search results to start over.
@@ -73,8 +67,6 @@
 /* API Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
-// TODO: remove recipeId from global scope; will use for testing and to prevent js errorls on line 81/82 for now.
-// TODO: CLEAN UP GLOBAL VARS IF NOT NEEDED!
 let recipeId = "";
 const SPOON_BASE_URL = `https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/`;
 const GET_RECIPE_STRING = `${recipeId}/information?includeNutrition=true`;
@@ -100,28 +92,22 @@ function callApi(baseUrl, query, callback) { // Generalized for portability. On 
 
 // For sending headers on the API Request
 function setHeader(xhr) {
-  //xhr.setRequestHeader('X-Mashape-Key', 'sBZW8aQPkjmshiV8iEbeWh3Uzr9Mp1GaEhujsnpCQGWpcewGEG');  //about to go over quota, using other key below.
-//   xhr.setRequestHeader('X-Mashape-Key', 'yB6rBrVNkAmshmK9hd1NgffQUVvZp1JQkYbjsnn8OTIJU5rVgv'); // More quotas...
   xhr.setRequestHeader('X-Mashape-Key', 'P5HNiYA1rwmshLxvgqpnK55DCX5Wp1mSLTZjsnrG21Zd27gPoU');
 }
 
 // Basic Error Handling
 function apiError(jqXHR, textStatus, errorThrown) {
-    //alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
-    // console.log(`/--------------------`);
-    // console.log('jqXHR:');
-    // console.log(jqXHR);
-    // console.log('textStatus:');
-    // console.log(textStatus);
-    // console.log('errorThrown:');
-    // console.log(errorThrown);
-    // console.log(`/--------------------`);
+    alert('An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!');
+    console.log(`/--------------------`);
+    console.log('jqXHR:');
+    console.log(jqXHR);
+    console.log('textStatus:');
+    console.log(textStatus);
+    console.log('errorThrown:');
+    console.log(errorThrown);
+    console.log(`/--------------------`);
 }
 
-// test function to be passed as callback verify correct response
-// function apiTest(data){
-//  console.log(data)
-// }
 /* End API Section
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
@@ -203,6 +189,31 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 */
 
 function makeSummaryCard(data){
+    // Catch empty results.
+    console.log(data);
+    if (data.length == 0) { // is no results
+        // display modal and restart button.
+
+        $('main').append(`<div class="error ten columns offset-by-one column" aria-live="assertive"><p>No need to cry over spilt milk, but we couldn't find any recipes that matched your search. Maybe check your spelling and try again. Just click the restart button below.</p></div>`)
+        $('#js-restart-button').removeClass('clip').addClass('top');
+
+        //restart listener
+        $('#js-restart-button').on('click', function(event){
+            event.stopPropagation();
+            event.preventDefault();
+            $('#js-search-form').find("input[type=text], textarea").val("");
+            $('.js-recipe-card').empty();
+            $('.js-summary').empty();
+            $('.js-summary').append(`<legend class="clip">Search Results</legend>`);
+            summaryCardsArr.length = 0;
+            $('.js-summary-card').addClass('clip');
+            $('.js-summary-card').attr("aria-hidden", "true");
+            $('#js-search-form').removeClass('clip');
+            $('#js-restart-button').addClass('clip').removeClass('top');
+            $('.error').remove();
+        });
+    }
+
     // console.log(`makeSummaryCard is running...`);
     let arrLength = 0;
 
@@ -252,6 +263,7 @@ function makeSummaryCard(data){
 function displaySummaryResults(arr){
     // console.log(`displaySummaryResults ran...`);
     $('.js-summary-card').removeClass('clip');
+    $('.js-summary-card').attr("aria-hidden", "false");
     $('#js-restart-button').removeClass('clip');
     for (let i=0; i<arr.length; i++){
         $(".js-summary").append(`
@@ -286,7 +298,6 @@ function displaySummaryResults(arr){
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 function getRidOfSimilar (myStr) {
     let regx = new RegExp(/\.(\s\w+)?((\s\w+)+[!,.;:']?(\s\w+)+?:?)?\s\<a/, 'g');
-    // let regx = new RegExp(/\.(\s\w+)+[!,.;:']?(\s\w+)+:?\s\<a/, 'g');
     let match = regx.exec(myStr);
     if (match) {
         let newStr = myStr.substring(0,(match.index+1));
@@ -313,6 +324,7 @@ function watchSummary(){
         $('.js-summary').append(`<legend class="clip">Search Results</legend>`);
         summaryCardsArr.length = 0;
         $('.js-summary-card').addClass('clip');
+        $('.js-summary-card').attr("aria-hidden", "true");
         $('#js-search-form').removeClass('clip');
         $('#js-restart-button').addClass('clip');
         let listSize = $('#js-search-form input[type="text"]').length;
@@ -321,7 +333,6 @@ function watchSummary(){
             listSize--;
         }
         // console.log(`watchSummary called onFormSubmit`);
-        //onFormSubmit();
 
     });
     $('.js-summary-card').on('click', 'button', function(event){
@@ -331,6 +342,7 @@ function watchSummary(){
         // console.log(`watchSummary called makeRecipeCard...`)
         makeRecipeCard(this.id);
         $('.js-summary-card').addClass('clip');
+        $('.js-summary-card').attr("aria-hidden", "true");
         $('#js-restart-button').addClass('clip');
     });
 }
@@ -345,7 +357,6 @@ function makeRecipeCard(idNum){
     // console.log(`makeRecipeCard ran...`);
     $('.js-recipe-card').empty();
     // console.log(`making api call to make recipe card for: ${idNum}`);
-    //call ajax might be able to use callApi here.
     $.ajax({
         url: `${SPOON_BASE_URL}${idNum}/information?includeNutrition=true`,
         type: 'GET',
@@ -367,6 +378,18 @@ function makeRecipeCard(idNum){
                     // abbreviate the units of measurement
                     let abbrvUnit;
                     switch (data.extendedIngredients[i].unit){
+                        case 'ounces':
+                            abbrvUnit = 'oz';
+                            break;
+                        case 'cups':
+                            abbrvUnit = 'C';
+                            break;
+                        case 'pound':
+                            abbrvUnit = 'lb';
+                            break;
+                        case 'pounds':
+                            abbrvUnit = 'lbs';
+                            break;
                         case 'teaspoon':
                             abbrvUnit = 'tsp';
                             break;
@@ -383,7 +406,7 @@ function makeRecipeCard(idNum){
                             abbrvUnit = 'oz';
                             break;
                         case 'cup':
-                            abbrvUnit = 'c';
+                            abbrvUnit = 'C';
                             break;
                         case 'pint':
                             abbrvUnit = 'pt';
@@ -433,7 +456,8 @@ function makeRecipeCard(idNum){
                             <a href="#0" id="js-wine-button" class="fab fab-action-button fab-action-button__wine" title="Wine Reccomendations">Wine Reccomendations</a>
                             </span>
                             <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
-                        </div>`); // <a href="#0" id="js-share-button" class="fab fab-action-button fab-action-button__share" title="Share this Recipe">Share this Recipe</a>
+                        </div>`);
+                        // <a href="#0" id="js-share-button" class="fab fab-action-button fab-action-button__share" title="Share this Recipe">Share this Recipe</a>
             // console.log(`makeRecipCard is calling recipeCardListener...`);
             recipeCardListener(data);
         },
@@ -450,6 +474,7 @@ function recipeCardListener(data){
         event.preventDefault();
         $('.js-recipe-card').addClass('clip');
         $('.js-summary-card').removeClass('clip');
+        $('.js-summary-card').attr("aria-hidden", "false");
         $('#js-restart-button').removeClass('clip');
         $('.js-recipe-card').empty();
     });
