@@ -5,6 +5,7 @@
 }
 
 .clip {
+    visibility: hidden;
     top: -9999px;
 	position: absolute !important;
 	clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
@@ -43,7 +44,7 @@ header img {
     margin-right: auto;
 }
 
-.instructions p {
+.instructions p, .error p {
     font-size: 2.5rem;
     font-weight: bold;
     line-height: 3.1rem;
@@ -57,6 +58,9 @@ header img {
 
 }
 
+.top {
+    top: 60rem !important;
+}
 
 input[type="text"] {
     height: 5.3rem !important;
