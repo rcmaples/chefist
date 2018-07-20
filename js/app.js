@@ -92,7 +92,7 @@ function callApi(baseUrl, query, callback) { // Generalized for portability. On 
 
 // For sending headers on the API Request
 function setHeader(xhr) {
-  xhr.setRequestHeader('X-Mashape-Key', 'P5HNiYA1rwmshLxvgqpnK55DCX5Wp1mSLTZjsnrG21Zd27gPoU');
+  xhr.setRequestHeader('X-Mashape-Key', '5SHxhzFbo2msh6Rkz8NoW63pfxxCp1m3e62jsn71HI46H1OtPl');
 }
 
 // Basic Error Handling
@@ -190,7 +190,7 @@ For Image, cooktime, calories, call the api using GET_RECIPE_STRING.
 
 function makeSummaryCard(data){
     // Catch empty results.
-    console.log(data);
+   // console.log(data);
     if (data.length == 0) { // is no results
         // display modal and restart button.
 
