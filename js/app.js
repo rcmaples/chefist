@@ -132,7 +132,7 @@ function onFormSubmit(){
         $('.instructions').addClass('clip');
         let jsIngredients = $(this).serializeArray(); // Array of values
         let ingredientString = ""; // empty string
-        console.log(jsIngredients);
+        //console.log(jsIngredients);
 
         for (let k = 0; k<jsIngredients.length; k++) { // This for loop could probably be done with a map reduce...
             if (jsIngredients[k].value) { // if non-empty
@@ -153,7 +153,7 @@ function onFormSubmit(){
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 function increaseFormFields() {
- console.log('increaseFormFields is running...');
+ //console.log('increaseFormFields is running...');
 
     $('.js-input-text:nth-last-of-type(2)').on('change', function(event){
         event.stopPropagation();
@@ -204,7 +204,7 @@ function makeSummaryCard(data){
         $('#js-restart-button').on('click', function(event){
             event.stopPropagation();
             event.preventDefault();
-            $('#js-search-form').find("input[type=text], textarea").val("");
+            $('.js-input-text').find("input[type=text], textarea").val("");
             $('.js-recipe-card').empty();
             $('.js-summary').empty();
             $('.js-summary').append(`<legend class="clip">Search Results</legend>`);
