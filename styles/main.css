@@ -12,6 +12,17 @@
 	clip: rect(1px, 1px, 1px, 1px);
 }
 
+.visuallyhidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    margin: -1px;
+    border: 0;
+    padding: 0;
+}
+
 header, h1, h2, h3, h4, h5, h6 {
     font-family: 'Arvo', serif;
 }
@@ -661,4 +672,8 @@ a.action-button:hover,a.action-button:active {
     position:relative;
     right: 105px;
     top: -10px
+}
+
+.js-credit-text a {
+    color:black;
 }

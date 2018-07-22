@@ -30,6 +30,7 @@
         <div class="row">
             <div class="twelve columns">
                 <img src="./img/chefist-logo.png" alt="Chefist Logo Image" srcset="./img/chefist-logo@2x.png 2x" class="u-max-full-width"/>
+                <h1 class="visuallyhidden">chefist</h1>
                 <p>Your food. Gour-made&copy;</p>
             </div>
         </div>
@@ -49,8 +50,12 @@
             <form id="js-search-form" aria-live="polite" action="#" method="GET">
                 <fieldset>
                     <legend class="clip">Enter your ingredients</legend>
-                    <input type="text" placeholder="Chicken Breast" id="ingredient-1" name="ingredient-1" required>
-                    <input type="text" placeholder="Chicken Breast" id="ingredient-2" name="ingredient-2">
+                    <label for="ingredient-1" class="visuallyhidden">Ingredient 1:</label>
+                    <input type="text" placeholder="ingredient 1" id="ingredient-1" class="js-input-text" name="ingredient-1" required>
+
+                    <label for="ingredient-2" class="visuallyhidden">Ingredient 2:</label>
+                    <input type="text" placeholder="ingredient 2" id="ingredient-2" class="js-input-text" name="ingredient-2">
+
                     <input type="submit"/>
                     <!-- <button class="fab fab-action-button">
                         <i class="fab-action-button__add"></i>
@@ -59,26 +64,26 @@
             </form>
 
             <div class="row">
-                <a href="#0" id="js-restart-button" class="fab fab-action-button fab-action-button__restart clip" title="Start Over">Start Over</a>
+                <button href="#0" id="js-restart-button" class="fab fab-action-button fab-action-button__restart clip" title="Start Over">Start Over</button>
             </div>
         </section>
         </div>
+
+        <section role="group">
+            <form class="js-summary-card clip" aria-live="polite" action="#" method="GET">
+                <fieldset class="js-summary">
+                </fieldset>
+            </form>
+        </section>
+        <section role="article" class="js-recipe-card clip" aria-live="assertive"></section>
+        <div class="modal js-wine-modal" aria-live="polite" role="dialog">
+            <p>You want wine?</p>
+            <a href="#close-modal" tabIndex="0" rel="modal:close" class="js-modal-close">Close</a>
+        </div>
+
     </main>
-
-    <form class="js-summary-card clip" aria-live="polite" action="#" method="GET">
-            <fieldset class="js-summary">
-
-            </fieldset>
-    </form>
-
-    <section role="article" class="js-recipe-card clip" aria-live="assertive"></section>
-
     </div> <!-- end container -->
 
-    <div class="modal js-wine-modal" aria-live="polite" role="dialog">
-        <p>You want wine?</p>
-        <a href="#close-modal" tabIndex="0" rel="modal:close" class="js-modal-close">Close</a>
-      </div>
 
     <script src="./js/app.js"></script>
 </body>
