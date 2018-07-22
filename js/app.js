@@ -132,6 +132,7 @@ function onFormSubmit(){
         $('.instructions').addClass('clip');
         let jsIngredients = $(this).serializeArray(); // Array of values
         let ingredientString = ""; // empty string
+        console.log(jsIngredients);
 
         for (let k = 0; k<jsIngredients.length; k++) { // This for loop could probably be done with a map reduce...
             if (jsIngredients[k].value) { // if non-empty
@@ -152,15 +153,17 @@ function onFormSubmit(){
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 function increaseFormFields() {
-    // console.log('increaseFormFields is running...');
-    $('#js-search-form input[type=text]').filter(":last").prev().on('change', function(event){
+ console.log('increaseFormFields is running...');
+
+    $('.js-input-text:nth-last-of-type(2)').on('change', function(event){
         event.stopPropagation();
         event.preventDefault();
-        let numFields = Number($('input[type=text]').filter(":last").attr('id').slice(11,));
+        let numFields = Number($('.js-input-text').filter(":last").attr('id').slice(11,));
         let j = numFields+1;
         if (numFields<10) {
-            $('input[type=text]').last().after(
-                `<input type="text" placeholder="Chicken Breast" id="ingredient-${j}" name="ingredient-${j}">`
+            $('.js-input-text').last().after(
+                `<label for="ingredient-${j}" class="visuallyhidden">ingredient ${j}</label>
+                 <input type="text" placeholder="ingredient ${j}" id="ingredient-${j}" class="js-input-text" name="ingredient-${j}">`
             );
             // console.log('increaseFormFields is calling increaseFormFields...');
             increaseFormFields();
@@ -452,12 +455,11 @@ function makeRecipeCard(idNum){
                     .after(`<p class="js-instructions">Instructions:</p>
                             <p>${data.instructions}</p>
                             <span class="js-fabs">
-                            <a href="#0" id="js-prev-button" class="fab fab-action-button fab-action-button__prev" title="Back to Results">Back to Results</a>
-                            <a href="#0" id="js-wine-button" class="fab fab-action-button fab-action-button__wine" title="Wine Reccomendations">Wine Reccomendations</a>
+                                <button id="js-prev-button" class="fab fab-action-button fab-action-button__prev" title="Back to Results">Back to Results</button>
+                                <button id="js-wine-button" class="fab fab-action-button fab-action-button__wine" title="Wine Reccomendations">Wine Reccomendations</button>
                             </span>
-                            <span class="js-credit-text">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
+                            <span class="js-credit-text" aria-hidden="true">Image &copy; <a href="${data.sourceUrl}">${data.creditText}</a></span>
                         </div>`);
-                        // <a href="#0" id="js-share-button" class="fab fab-action-button fab-action-button__share" title="Share this Recipe">Share this Recipe</a>
             // console.log(`makeRecipCard is calling recipeCardListener...`);
             recipeCardListener(data);
         },
