@@ -1,6 +1,7 @@
 # The Chefist
 
 - [View it Live](https://rcmaples.io/chefist)
+*This is no longer active. Due to API Usage Overages, I have blocked the API Key. Will convert to node and republish with env key and rate limiting.*
 
 ## What/Why/How
 Chefist takes a list of ingredients from the user and locates recipes that can be made with those ingredients. Results are set to prioritize open license recipes minimizing non-included ingredients using endpoint parameters.
