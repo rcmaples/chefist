@@ -92,7 +92,7 @@ function callApi(baseUrl, query, callback) { // Generalized for portability. On 
 
 // For sending headers on the API Request
 function setHeader(xhr) {
-  xhr.setRequestHeader('X-Mashape-Key', 'Sanitized.');
+  xhr.setRequestHeader('X-Mashape-Key', '32hQAJjWbjmshCZKBlGZ8Z6yzUHCp1fPQUYjsnDMIm5ePZ4AbX');
 }
 
 // Basic Error Handling
